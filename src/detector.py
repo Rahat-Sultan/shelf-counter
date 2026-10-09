@@ -30,7 +30,12 @@ class ShelfDetector:
         self.confidence = confidence
         self.product_class = product_class
 
-    def detect(self, frame) -> sv.Detections:
-        result = self.model.infer(frame, confidence=self.confidence, max_detections=config.MAX_DETECTIONS)[0]
+    def detect(self, frame, confidence: float | None = None) -> sv.Detections:
+        """Detects products in a BGR frame. `confidence` overrides the default for this call only."""
+        result = self.model.infer(
+            frame,
+            confidence=self.confidence if confidence is None else confidence,
+            max_detections=config.MAX_DETECTIONS,
+        )[0]
         detections = sv.Detections.from_inference(result)
         return keep_products(detections, self.product_class)

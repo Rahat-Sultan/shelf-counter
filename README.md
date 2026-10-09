@@ -28,6 +28,10 @@ Get a free API key from your Roboflow account settings and put it in `.env`.
 streamlit run app.py
 ```
 
+The page opens at http://localhost:8501. Upload a photo to see it boxed and counted, with the processing time
+and a download button. The sidebar slider changes the confidence threshold (default 0.3). The first upload also
+loads the model; later uploads reuse it.
+
 To box and count photos from the command line (no web page):
 
 ```bash
