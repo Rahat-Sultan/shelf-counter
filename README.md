@@ -5,6 +5,8 @@ Uses a pretrained model from Roboflow Universe, so there is no data labeling or 
 
 ## Setup
 
+New to the project? Follow [STARTUP.md](STARTUP.md) for a step-by-step setup with checks and fixes for common problems.
+
 Requires Python 3.10 to 3.12. The `inference` package does not support newer Python versions yet,
 so if your default `python` is 3.13 or later, create the venv with `python3.12` instead.
 
