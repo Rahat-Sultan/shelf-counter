@@ -10,4 +10,5 @@ pandas==2.3.3
 # Same version as the opencv-python that inference installs, so only one cv2 build is present.
 opencv-python-headless==4.12.0.88
 python-dotenv==1.2.4
+requests==2.34.2
 pytest==9.1.1

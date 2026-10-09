@@ -13,6 +13,8 @@ import supervision as sv
 from src import config
 from src.annotator import Annotator
 from src.detector import ShelfDetector
+from src.errors import UserFacingError
+from src.validator import UNREADABLE_IMAGE, UNREADABLE_VIDEO
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +26,7 @@ class Result:
     per_frame_counts: list[int] = field(default_factory=list)
     seconds: float = 0.0
     fps: float = 0.0  # video only, used to plot counts against time
+    note: str = ""  # something the user should know about an otherwise good result
 
 
 class Processor(ABC):
@@ -48,6 +51,8 @@ class ImageProcessor(Processor):
     def process(self, path: Path) -> Result:
         start = time.perf_counter()
         frame = cv2.imread(str(path))
+        if frame is None:
+            raise UserFacingError(UNREADABLE_IMAGE)
         detections = self.detector.detect(frame, self.confidence)
         annotated = self.annotator.annotate(frame, detections)
         out_path = self.output_dir / f"{path.stem}_annotated.jpg"
@@ -75,15 +80,21 @@ def encode_for_browser(src: Path, dst: Path) -> None:
         logger.warning("ffmpeg not found; the annotated video may not play in the browser. See the README.")
         src.replace(dst)
         return
-    subprocess.run(
-        [
-            ffmpeg, "-y", "-loglevel", "error", "-i", str(src),
-            "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
-            "-movflags", "+faststart", "-an", str(dst),
-        ],
-        check=True,
-        capture_output=True,
-    )
+    try:
+        subprocess.run(
+            [
+                ffmpeg, "-y", "-loglevel", "error", "-i", str(src),
+                "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
+                "-movflags", "+faststart", "-an", str(dst),
+            ],
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        # The mp4v file is still a valid result, so keep it rather than failing the whole upload.
+        logger.warning("ffmpeg failed, keeping the mp4v video: %s", exc.stderr.decode(errors="replace").strip())
+        src.replace(dst)
+        return
     src.unlink()
 
 
@@ -122,6 +133,14 @@ class VideoProcessor(Processor):
                 if self.on_progress and info.total_frames:
                     self.on_progress(min(1.0, (i + 1) / info.total_frames))
 
+        if not counts:
+            raise UserFacingError(UNREADABLE_VIDEO)
         encode_for_browser(raw_path, out_path)
+        note = ""
+        if info.total_frames and len(counts) < 0.9 * info.total_frames:
+            note = (
+                f"Only {len(counts)} of {info.total_frames} frames could be read. "
+                "The file may be incomplete, so the results cover only the readable part."
+            )
         # Headline count for a video is the highest per-frame count (PRD assumption A5).
-        return Result(out_path, max(counts, default=0), counts, time.perf_counter() - start, info.fps)
+        return Result(out_path, max(counts), counts, time.perf_counter() - start, info.fps, note)

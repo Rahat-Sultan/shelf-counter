@@ -1,17 +1,44 @@
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
-load_dotenv()
+# Read .env into our own settings instead of os.environ. The inference package parses some of the same
+# names (for example CONFIDENCE) at import time, and a bad value there would crash it before our checks.
+# Real environment variables still take precedence over .env, as with load_dotenv().
+_settings = {**dotenv_values(), **os.environ}
 
-ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY", "")
-MODEL_ID = os.getenv("MODEL_ID", "")
-CONFIDENCE = float(os.getenv("CONFIDENCE", "0.3"))
+# Problems found while reading settings; the page shows these as warnings instead of crashing.
+WARNINGS: list[str] = []
+
+API_KEY_PLACEHOLDER = "your_api_key_here"  # the value in .env.example
+ROBOFLOW_API_KEY = (_settings.get("ROBOFLOW_API_KEY") or "").strip()
+MODEL_ID = (_settings.get("MODEL_ID") or "").strip()
+
+DEFAULT_CONFIDENCE = 0.3
+MIN_CONFIDENCE, MAX_CONFIDENCE = 0.05, 0.95  # the slider's range
+
+
+def _read_confidence() -> float:
+    raw = (_settings.get("CONFIDENCE") or str(DEFAULT_CONFIDENCE)).strip()
+    try:
+        value = float(raw)
+    except ValueError:
+        WARNINGS.append(f"CONFIDENCE in .env is '{raw}', which is not a number. Using {DEFAULT_CONFIDENCE}.")
+        return DEFAULT_CONFIDENCE
+    clamped = min(max(value, MIN_CONFIDENCE), MAX_CONFIDENCE)
+    if clamped != value:
+        WARNINGS.append(
+            f"CONFIDENCE in .env is {value}, outside {MIN_CONFIDENCE} to {MAX_CONFIDENCE}. Using {clamped}."
+        )
+    return clamped
+
+
+CONFIDENCE = _read_confidence()
 
 # The chosen model (planogram_sku110k/1, trained on SKU-110K) has a single class named "0".
 # Only boxes of this class are drawn and counted.
-PRODUCT_CLASS = os.getenv("PRODUCT_CLASS", "0").lower()
+PRODUCT_CLASS = (_settings.get("PRODUCT_CLASS") or "0").strip().lower()
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 VIDEO_EXTENSIONS = {".mp4"}

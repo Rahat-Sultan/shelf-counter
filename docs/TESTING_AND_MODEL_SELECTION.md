@@ -85,6 +85,39 @@ If no candidate performs acceptably, use an open-vocabulary model that Roboflow 
 
 Automated tests live in `tests/`. Run them with `pytest`. Currently covered: unsupported type, small image accepted, oversized image rejected, short video accepted, 31-second video rejected, a count for every video frame with detection on every 5th, H.264 output, and the no-ffmpeg fallback.
 
+### Results (2026-10-09)
+
+Run through the real page with Streamlit's test harness. All passed.
+
+| # | Result |
+| --- | --- |
+| T1, T2 | 230 products, 0.12 s (same photo as .jpg and .png) |
+| T3 | 10 s 4K video: annotated H.264 video, 602 per-frame counts, 33.6 s |
+| T4 | "Unsupported file type. Please upload a .jpg, .png or .mp4 file." |
+| T5 | "This file could not be read as an image. It may be damaged, or not really a .jpg or .png file." |
+| T6 | "Image is 19.4 MB. The limit is 10 MB." |
+| T7 | "Video is 31.0 seconds long. The limit is 30 seconds." |
+| T8 | "Video is 145.9 MB. The limit is 100 MB." |
+| T9 | Blank and black photos: 0 products. Shelf darkened to 15%: 156 products |
+| T10 | "ROBOFLOW_API_KEY is not set in the .env file. ..." (also for the `.env.example` placeholder) |
+| T11 | Each file processed independently, nothing left over |
+| T12 | Same photo twice: 230 both times |
+
+Extra cases added in Phase 5:
+
+| Case | Result |
+| --- | --- |
+| Empty file | "The file is empty. Please upload a shelf photo or video." |
+| Text renamed to .mp4, truncated .mp4 with no readable frames | "This video could not be read. It may be damaged or incomplete. ..." |
+| Half of an .mp4 | Processed, with a warning: "Only 127 of 258 frames could be read. ..." |
+| Half of a .jpg | Counted as far as it decodes (117 products), no warning |
+| Wrong API key | "Roboflow rejected the API key. ..." |
+| Wrong or unversioned MODEL_ID | "Roboflow could not find the model '...'. ..." |
+| No network, model not downloaded yet | "Could not reach Roboflow to download the model. ..." |
+| No network, model already downloaded | Works offline |
+| `CONFIDENCE=abc` or `1.5` in `.env` | Warning on the page, falls back to 0.3 or 0.95 |
+| 4000x3000 phone-size photo | 0.21 s |
+
 ## 4. Performance checks
 
 | Check | Target | How |

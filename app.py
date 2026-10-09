@@ -8,6 +8,7 @@ import streamlit as st
 from src import config
 from src.annotator import Annotator
 from src.detector import ShelfDetector
+from src.errors import friendly_message
 from src.processors import ImageProcessor, VideoProcessor
 from src.validator import validate
 
@@ -17,9 +18,20 @@ st.set_page_config(page_title="Shelf Product Counter", layout="centered")
 st.title("Shelf Product Counter")
 st.caption("Upload a shelf photo (.jpg, .png) or a short video (.mp4, under 30 seconds).")
 
-if not config.ROBOFLOW_API_KEY or not config.MODEL_ID:
-    st.error("ROBOFLOW_API_KEY and MODEL_ID must be set in the .env file. See the README for setup.")
+missing = [
+    name
+    for name, value in [("ROBOFLOW_API_KEY", config.ROBOFLOW_API_KEY), ("MODEL_ID", config.MODEL_ID)]
+    if not value or value == config.API_KEY_PLACEHOLDER
+]
+if missing:
+    st.error(
+        f"{' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} not set in the .env file. "
+        "Copy .env.example to .env, fill in your values, then restart the app. See the README for setup."
+    )
     st.stop()
+
+for warning in config.WARNINGS:
+    st.warning(warning)
 
 
 @st.cache_resource(show_spinner="Loading the model (first run only)...")
@@ -29,8 +41,8 @@ def load_detector() -> ShelfDetector:
 
 confidence = st.sidebar.slider(
     "Confidence threshold",
-    min_value=0.05,
-    max_value=0.95,
+    min_value=config.MIN_CONFIDENCE,
+    max_value=config.MAX_CONFIDENCE,
     value=config.CONFIDENCE,
     step=0.05,
     help="Lower finds more products but may add false boxes. Higher keeps only confident boxes.",
@@ -52,6 +64,7 @@ if uploaded is not None:
             st.error(check.message)
             st.stop()
 
+        bar = None
         try:
             detector = load_detector()
             if check.kind == "image":
@@ -70,10 +83,15 @@ if uploaded is not None:
                 result = processor.process(input_path)
                 bar.empty()
             data = result.output_path.read_bytes()
-        except Exception:
+        except Exception as exc:
             logger.exception("Processing failed for %s", uploaded.name)
-            st.error("Something went wrong while processing the file. Check the terminal for details and try again.")
+            if bar is not None:
+                bar.empty()
+            st.error(friendly_message(exc))
             st.stop()
+
+    if result.note:
+        st.warning(result.note)
 
     if check.kind == "image":
         count_col, time_col = st.columns(2)

@@ -10,7 +10,8 @@ The app is a single local Python process. A Streamlit page accepts an upload, a 
 | --- | --- | --- |
 | Upload page | `app.py` | File upload, shows result, count and download button, shows errors |
 | Config | `src/config.py` | Settings and limits, reads `.env` |
-| Validator | `src/validator.py` | Checks file type, size and video duration before any processing |
+| Validator | `src/validator.py` | Checks file type, size, video duration, and that the file can be read, before any processing |
+| Errors | `src/errors.py` | Turns model, key and network failures into plain-English messages |
 | Detector | `src/detector.py` | Wraps Roboflow Inference; returns Supervision `Detections` |
 | Annotator | `src/annotator.py` | Draws boxes and the product count on a frame |
 | Image processor | `src/processors.py` | Image path: read, detect, annotate, save |
@@ -152,6 +153,8 @@ erDiagram
 | Image and video share a `Processor` base class | Same flow, different frame source; keeps the page code simple |
 | No label text on boxes | Shelves are dense, labels would clutter the image; the count overlay is enough |
 | Config in `.env`, limits in `config.py` | Keeps the API key out of Git and limits easy to change |
+| `.env` is read with `dotenv_values`, not exported to the environment | The `inference` package parses `CONFIDENCE` itself on import, so a bad value would crash it before the app's own checks. Real environment variables still override `.env` |
+| Bad settings warn instead of crashing | A non-numeric or out-of-range `CONFIDENCE` falls back to the default or the nearest limit, with a warning on the page |
 | Temporary file for uploads | OpenCV and Supervision read from a path, not from memory |
 
 ## 8. Configuration
@@ -184,11 +187,14 @@ shelf-counter/
   src/
     config.py
     validator.py
+    errors.py
     detector.py
     annotator.py
     processors.py
   tests/
     test_validator.py
+    test_video.py
+    test_errors.py
   samples/
     inputs/
     outputs/

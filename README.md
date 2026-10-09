@@ -78,6 +78,8 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 - One file at a time, no live camera.
 - Photos with people in them are out of scope.
 - Dense shelves and glare can cause missed products.
+- A partly damaged photo is counted as far as it can be decoded, without a warning. A partly damaged video
+  shows a warning saying how many frames could be read.
 - Small or low-resolution photos (for example 200x360 px) miss many products. Use full-resolution photos.
 - Very dark photos return fewer products (a shelf darkened to 15% brightness dropped from 230 to 155).
 - Video takes longer than images: a 10-second 4K 60 fps clip takes about 35 seconds on a laptop CPU.
@@ -88,7 +90,8 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 ```
 app.py              Streamlit page
 src/config.py       settings and limits
-src/validator.py    file type, size and duration checks
+src/validator.py    file type, size, duration and readability checks
+src/errors.py       plain-English messages for model, key and network errors
 src/detector.py     Roboflow model wrapper
 src/annotator.py    boxes and count overlay
 src/processors.py   image and video pipelines
