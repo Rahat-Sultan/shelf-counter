@@ -100,8 +100,8 @@ The starter code uses Streamlit. Gradio would also satisfy the brief.
 | A3 | `.jpeg` files | Accepted as an alias of `.jpg` |
 | A4 | The video count is requested "per frame" but detection runs every 5th frame | Detection runs every 5th frame, last result reused in between, so each frame has a count |
 | A5 | The headline count for a video | Highest per-frame count. Confirm, or switch to the average |
-| A6 | Model names in the brief came from memory, not a live search | Decided: use `retail-shelf-detection-peimi/1` from Universe (2 classes: `product`, `empty`; 425 training images). Only `product` boxes are counted. Still verify on 10 own photos, and keep the open-vocabulary fallback in mind if it misses too many |
-| A7 | Where inference runs (local or hosted API) | Decide in Phase 1 based on measured speed against the 5-second target |
+| A6 | Model names in the brief came from memory, not a live search | Decided after testing on 10 photos: use `planogram_sku110k/1` (trained on SKU-110K, one class `0`). It found 1,168 products against 692 for `retail-shelf-detection-peimi/1`. See `TESTING_AND_MODEL_SELECTION.md` |
+| A7 | Where inference runs (local or hosted API) | Decided: local. 0.11 s per photo on a laptop CPU, well under the 5-second target |
 
 ## 10. Risks
 

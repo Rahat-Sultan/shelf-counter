@@ -31,6 +31,6 @@ class ShelfDetector:
         self.product_class = product_class
 
     def detect(self, frame) -> sv.Detections:
-        result = self.model.infer(frame, confidence=self.confidence)[0]
+        result = self.model.infer(frame, confidence=self.confidence, max_detections=config.MAX_DETECTIONS)[0]
         detections = sv.Detections.from_inference(result)
         return keep_products(detections, self.product_class)

@@ -28,14 +28,31 @@ Get a free API key from your Roboflow account settings and put it in `.env`.
 streamlit run app.py
 ```
 
+To box and count photos from the command line (no web page):
+
+```bash
+python -m scripts.count_image path/to/shelf.jpg
+```
+
+To compare models or confidence values on a folder of photos (writes `outputs/eval/results.csv`):
+
+```bash
+python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=0 --confidence 0.3 0.4 0.5
+```
+
 ## Chosen model
 
-- Model ID: `retail-shelf-detection-peimi/1`
-  ([Universe page](https://universe.roboflow.com/tossoengineering/retail-shelf-detection-peimi))
-- Type: Roboflow object detection model with two classes, `product` and `empty` (empty shelf space).
-  The app draws and counts only `product` boxes.
-- Training data: 425 images (per the Universe page).
-- Why: _to be completed after testing on the 10 shelf photos: how many products it missed, and how it compares with any alternative tried_
+- Model ID: `planogram_sku110k/1`
+  ([Universe workspace](https://universe.roboflow.com/sample-rzhbg), project Planogram_SKU110K)
+- Type: Roboflow object detection model trained on SKU-110K (about 11.7k densely packed shelf images).
+  It has one class, named `0`, so every box is a product. Set `PRODUCT_CLASS=0` in `.env`.
+- Confidence: 0.3. Lower values found more real products on the test photos without adding false
+  boxes; blank, grey, white and noise images return 0.
+- Why: on 10 test photos at confidence 0.4 it found 1,168 products against 692 for the first candidate,
+  `retail-shelf-detection-peimi/1`. That model skipped whole sections of shelves (for example 14 boxes
+  on a snack stand where this model finds 35). A third candidate, `shelf-product/1`, recognises
+  specific coffee brands rather than generic products, so it was ruled out.
+- Speed: 0.11 s per photo on average, 0.13 s slowest (Intel i5-8350U laptop CPU, no GPU).
 
 ## How it works
 
@@ -49,7 +66,9 @@ streamlit run app.py
 
 - One file at a time, no live camera.
 - Photos with people in them are out of scope.
-- Dense shelves and glare can cause missed products (details to be added after testing).
+- Dense shelves and glare can cause missed products.
+- Small or low-resolution photos (for example 200x360 px) miss many products. Use full-resolution photos.
+- Very dark photos return fewer products (a shelf darkened to 15% brightness dropped from 230 to 155).
 
 ## Project layout
 
@@ -60,6 +79,7 @@ src/validator.py    file type, size and duration checks
 src/detector.py     Roboflow model wrapper
 src/annotator.py    boxes and count overlay
 src/processors.py   image and video pipelines
+scripts/            command-line tools: count_image, evaluate, probe_models
 tests/              unit tests
 samples/            5 example inputs and outputs
 docs/               project documentation (see below)

@@ -159,8 +159,10 @@ erDiagram
 | Setting | Where | Default |
 | --- | --- | --- |
 | `ROBOFLOW_API_KEY` | `.env` | none (required) |
-| `MODEL_ID` | `.env` | none (required, `project-name/version`) |
-| `CONFIDENCE` | `.env` | 0.4 |
+| `MODEL_ID` | `.env` | none (required, `project-name/version`); chosen: `planogram_sku110k/1` |
+| `CONFIDENCE` | `.env` | 0.3 |
+| `PRODUCT_CLASS` | `.env` | `0` (the only class of the chosen model) |
+| `MAX_DETECTIONS` | `src/config.py` | 1000 (Inference defaults to 300, which undercounts packed shelves) |
 | `MAX_IMAGE_MB`, `MAX_VIDEO_MB`, `MAX_VIDEO_SECONDS` | `src/config.py` | 10, 100, 30 |
 | `FRAME_STEP` | `src/config.py` | 5 |
 

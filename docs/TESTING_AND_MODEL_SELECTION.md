@@ -50,6 +50,18 @@ True count is what you counted by eye. Missed = true count minus correct boxes. 
 
 Decision: Model ____ (ID: `project-name/version`) because ____.
 
+### First run (2026-10-09), before true counts
+
+Boxes found at confidence 0.4 on the 10 test photos (`python -m scripts.evaluate`). True counts are still to be added to `test_images/true_counts.csv`.
+
+| Model | Total found | Avg seconds | Notes |
+| --- | --- | --- | --- |
+| A: `retail-shelf-detection-peimi/1` | 692 | 0.05 | Skips whole shelf sections; 14 boxes on the snack stand, 1 on the convenience-store photo |
+| B: `planogram_sku110k/1` (class `0`) | 1,168 | 0.10 | Boxes items individually across full shelves; weak only on very small photos |
+| C: `shelf-product/1` | not run | | Classes are specific coffee brands, not generic products |
+
+Chosen: **B, `planogram_sku110k/1`**, because it found far more real products on every dense shelf, confirmed by checking the annotated images by eye.
+
 ### Fallback
 
 If no candidate performs acceptably, use an open-vocabulary model that Roboflow Inference can run (for example YOLO-World). You type what to find ("bottle", "box") and it detects it with no training. Confirm what is currently available before relying on it.
@@ -86,7 +98,7 @@ Record results here:
 
 | Date | Machine | Model ID | Avg image seconds | Slowest image | 10 s video seconds |
 | --- | --- | --- | --- | --- | --- |
-| | | | | | |
+| 2026-10-09 | Intel i5-8350U laptop, CPU only | `planogram_sku110k/1` @ 0.3 | 0.11 | 0.13 | |
 
 If images are slower than 5 seconds: resize large photos before detection, check that the model is cached, or try hosted inference.
 
