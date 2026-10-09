@@ -73,6 +73,7 @@ Priority: **Must** = needed for "done", **Should** = clear value and cheap, **Co
 | Roboflow Universe | Find and test a pretrained shelf model |
 | Roboflow Inference | Run the model from Python |
 | Supervision | Draw boxes, count detections, read and write video |
+| ffmpeg | Re-encode annotated video to H.264 so it plays in the browser |
 | Streamlit (or Gradio) | The upload page |
 | Python 3.10+ | Everything else |
 

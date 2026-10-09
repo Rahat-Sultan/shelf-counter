@@ -26,5 +26,9 @@ MAX_DETECTIONS = 1000
 # Run detection on every Nth video frame; frames in between reuse the last result.
 FRAME_STEP = 5
 
+# Video frames wider than this are scaled down before detection and drawing. The model works at about
+# 640 px anyway, and full 4K output is slow to process and too large to play smoothly in the page.
+VIDEO_MAX_WIDTH = 1280
+
 OUTPUT_DIR = Path("outputs")
 OUTPUT_DIR.mkdir(exist_ok=True)

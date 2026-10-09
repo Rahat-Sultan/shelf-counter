@@ -165,6 +165,7 @@ erDiagram
 | `MAX_DETECTIONS` | `src/config.py` | 1000 (Inference defaults to 300, which undercounts packed shelves) |
 | `MAX_IMAGE_MB`, `MAX_VIDEO_MB`, `MAX_VIDEO_SECONDS` | `src/config.py` | 10, 100, 30 |
 | `FRAME_STEP` | `src/config.py` | 5 |
+| `VIDEO_MAX_WIDTH` | `src/config.py` | 1280 (wider video frames are scaled down before detection) |
 
 ## 9. Folder layout
 
@@ -195,6 +196,6 @@ shelf-counter/
 
 ## 10. Known technical risks
 
-- Video output format may not play in some browsers. Re-encode to H.264 with ffmpeg if needed.
+- Video output format: OpenCV can only write MPEG-4 Part 2 (`mp4v`), which browsers do not play. Resolved: the video processor re-encodes to H.264 with ffmpeg. Without ffmpeg the video still downloads but may not play in the page.
 - Local CPU inference may exceed 5 seconds. Measure in Phase 2 and consider resizing images or hosted inference.
 - The `inference` package is large; first install is slow.

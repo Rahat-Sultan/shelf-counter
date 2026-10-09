@@ -22,6 +22,10 @@ cp .env.example .env             # then fill in your values
 
 Get a free API key from your Roboflow account settings and put it in `.env`.
 
+Install ffmpeg for video support (`sudo apt install ffmpeg`, or `brew install ffmpeg` on macOS). The app uses it
+to convert annotated videos to H.264 so they play in the browser. Without it, videos still download but may not
+play in the page.
+
 ## Run
 
 ```bash
@@ -63,7 +67,10 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 1. The page accepts a .jpg, .png or .mp4 file and validates type, size and video length.
 2. The detector runs the Roboflow model through Roboflow Inference.
 3. Supervision draws boxes and the product count.
-4. For video, detection runs on every 5th frame and the last result is reused for the frames in between, so every frame carries boxes and a count.
+4. For video, frames wider than 1280 px are scaled down first (the model works at about 640 px anyway).
+   Detection runs on every 5th frame and the last result is reused for the frames in between, so every frame
+   carries boxes and a count. The result is re-encoded to H.264 with ffmpeg so it plays in the browser.
+   The page shows the highest per-frame count, the average, a per-frame chart, and a CSV of per-frame counts.
 5. The page shows the result, the count and a download button.
 
 ## Limits
@@ -73,6 +80,8 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 - Dense shelves and glare can cause missed products.
 - Small or low-resolution photos (for example 200x360 px) miss many products. Use full-resolution photos.
 - Very dark photos return fewer products (a shelf darkened to 15% brightness dropped from 230 to 155).
+- Video takes longer than images: a 10-second 4K 60 fps clip takes about 35 seconds on a laptop CPU.
+  Lower resolution or frame rate clips are faster. The page shows a progress bar.
 
 ## Project layout
 

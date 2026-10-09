@@ -2,6 +2,7 @@ import logging
 import tempfile
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 from src import config
@@ -53,21 +54,31 @@ if uploaded is not None:
 
         try:
             detector = load_detector()
-            processor_cls = ImageProcessor if check.kind == "image" else VideoProcessor
-            processor = processor_cls(detector, Annotator(), confidence=confidence, output_dir=work_dir)
-            with st.spinner("Counting products..."):
+            if check.kind == "image":
+                processor = ImageProcessor(detector, Annotator(), confidence=confidence, output_dir=work_dir)
+                with st.spinner("Counting products..."):
+                    result = processor.process(input_path)
+            else:
+                bar = st.progress(0.0, text="Counting products in each frame...")
+                processor = VideoProcessor(
+                    detector,
+                    Annotator(),
+                    confidence=confidence,
+                    output_dir=work_dir,
+                    on_progress=lambda done: bar.progress(done, text=f"Counting products in each frame... {done:.0%}"),
+                )
                 result = processor.process(input_path)
+                bar.empty()
             data = result.output_path.read_bytes()
         except Exception:
             logger.exception("Processing failed for %s", uploaded.name)
             st.error("Something went wrong while processing the file. Check the terminal for details and try again.")
             st.stop()
 
-    count_col, time_col = st.columns(2)
-    count_col.metric("Products found", result.count)
-    time_col.metric("Processing time", f"{result.seconds:.2f} s")
-
     if check.kind == "image":
+        count_col, time_col = st.columns(2)
+        count_col.metric("Products found", result.count)
+        time_col.metric("Processing time", f"{result.seconds:.2f} s")
         result_tab, original_tab = st.tabs(["Result", "Original"])
         result_tab.image(data, width="stretch")
         original_tab.image(uploaded.getvalue(), width="stretch")
@@ -75,8 +86,27 @@ if uploaded is not None:
             "Download result", data, result.output_path.name, "image/jpeg", on_click="ignore", type="primary"
         )
     else:
+        counts = pd.DataFrame(
+            {
+                "Seconds": [i / result.fps for i in range(len(result.per_frame_counts))],
+                "Products": result.per_frame_counts,
+            }
+        )
+        max_col, avg_col, time_col = st.columns(3)
+        max_col.metric("Most products in a frame", result.count)
+        avg_col.metric("Average per frame", f"{counts['Products'].mean():.0f}")
+        time_col.metric("Processing time", f"{result.seconds:.1f} s")
         st.video(data)
-        st.line_chart(result.per_frame_counts)
-        st.download_button(
+        st.caption(f"Products per frame ({len(counts)} frames, detection on every {config.FRAME_STEP}th frame)")
+        st.line_chart(counts, x="Seconds", y="Products")
+        video_col, csv_col = st.columns(2)
+        video_col.download_button(
             "Download result", data, result.output_path.name, "video/mp4", on_click="ignore", type="primary"
+        )
+        csv_col.download_button(
+            "Download per-frame counts (CSV)",
+            counts.rename_axis("Frame").to_csv(),
+            f"{name.stem}_counts.csv",
+            "text/csv",
+            on_click="ignore",
         )

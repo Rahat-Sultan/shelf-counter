@@ -83,7 +83,7 @@ If no candidate performs acceptably, use an open-vocabulary model that Roboflow 
 | T11 | Upload two files one after another | Each processed independently, no leftover results |
 | T12 | Upload the same file twice | Same result both times |
 
-Automated tests live in `tests/`. Run them with `pytest`. Currently covered: unsupported type, small image accepted, oversized image rejected. Add video-length tests once you have sample clips.
+Automated tests live in `tests/`. Run them with `pytest`. Currently covered: unsupported type, small image accepted, oversized image rejected, short video accepted, 31-second video rejected, a count for every video frame with detection on every 5th, H.264 output, and the no-ffmpeg fallback.
 
 ## 4. Performance checks
 
@@ -98,7 +98,9 @@ Record results here:
 
 | Date | Machine | Model ID | Avg image seconds | Slowest image | 10 s video seconds |
 | --- | --- | --- | --- | --- | --- |
-| 2026-10-09 | Intel i5-8350U laptop, CPU only | `planogram_sku110k/1` @ 0.3 | 0.11 | 0.13 | |
+| 2026-10-09 | Intel i5-8350U laptop, CPU only | `planogram_sku110k/1` @ 0.3 | 0.11 | 0.13 | 34.7 (4K, 60 fps, 602 frames) |
+
+Breakdown of the 10 s 4K clip: detection 12.6 s (121 calls), decoding 7.6 s, scaling to 720p 4.9 s, drawing 1.1 s, writing and H.264 encoding about 8 s.
 
 If images are slower than 5 seconds: resize large photos before detection, check that the model is cached, or try hosted inference.
 
