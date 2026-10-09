@@ -1,0 +1,12 @@
+# CPU-only PyTorch. Without this, pip pulls the multi-GB CUDA build, which the app does not need.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.14.1+cpu
+torchvision==0.29.1+cpu
+
+inference==1.7.3
+supervision==0.30.9
+streamlit==1.65.0
+# Same version as the opencv-python that inference installs, so only one cv2 build is present.
+opencv-python-headless==4.12.0.88
+python-dotenv==1.2.4
+pytest==9.1.1
