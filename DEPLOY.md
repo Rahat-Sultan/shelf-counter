@@ -75,8 +75,9 @@ private access, step 4 says "This repository does not exist".
 
 Select **Advanced settings** before deploying.
 
-1. **Python version:** choose **3.12**. Newer versions do not work, because the `inference` package does not
-   support them yet.
+1. **Python version:** change it to **3.12**. The default is newer (3.14 on 2026-10-12), and the `inference`
+   package does not install on Python 3.14 yet. This setting **cannot be changed after the deploy**: if you miss
+   it, you have to delete the app and create it again.
 2. **Secrets:** paste the following, with your new key from step 1 between the quotes:
 
    ```toml
@@ -161,7 +162,7 @@ Only one private app is allowed at a time, so the old one must be deleted first.
 
 | What you see | What to do |
 | --- | --- |
-| Install fails with "No matching distribution" for `torch` or `inference` | The app is not on Python 3.12. Check **App settings**; if the version cannot be changed there, delete the app and create it again with Python 3.12 (step 5) |
+| "Error installing requirements", and the log says `No matching distribution found for inference==1.7.3` with `cp314` in the file names | The app runs on Python 3.14. The version cannot be changed on an existing app: copy the secrets (App settings, Secrets), delete the app (Manage app, ⋮, Delete), and create it again with Python **3.12** under Advanced settings (steps 4 and 5) |
 | Log shows `ImportError: libGL.so.1`, or videos do not play | `packages.txt` was not found. Make sure you deployed the `develop` branch (or `master` after step 10) and that `packages.txt` is in the repo root |
 | Page says "ROBOFLOW_API_KEY ... not set" | The secrets are missing or mistyped. Open **App settings → Secrets**, compare with step 5 (quotes and `=`), save, and **Reboot app** |
 | Page says "Roboflow rejected the API key" | The key is wrong or was revoked. Paste the new key into Secrets, save, and **Reboot app** |
