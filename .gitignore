@@ -3,6 +3,7 @@
 venv/
 __pycache__/
 .pytest_cache/
-outputs/
+# Only the scratch folder at the top level; samples/outputs/ is a deliverable and must be tracked.
+/outputs/
 *.pyc
 .DS_Store

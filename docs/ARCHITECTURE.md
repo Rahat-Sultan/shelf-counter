@@ -165,6 +165,10 @@ erDiagram
 | --- | --- |
 | Validate before processing | Rejects bad files cheaply, with a clear message, before the model is loaded or called |
 | Load the model once and cache it | Loading on every upload would break the 5-second target |
+| Import `inference` only when the model loads, then warm the model as soon as the page is drawn | Importing `inference` takes 10 to 20 seconds; at the top of `app.py` it left the page blank that long. Warming right after drawing keeps the first upload fast and reports a bad key immediately |
+| Listen on localhost only | Streamlit's default listens on every interface, so anyone on the same Wi-Fi could use the app |
+| Model cache in `~/.cache/shelf-counter/models` | The default `/tmp/cache` is wiped on reboot, which forced a new download and broke offline use |
+| Check image megapixels from the header before decoding | A 17 KB PNG decoded to 432 MB in testing; OpenCV accepts up to about 1 billion pixels |
 | Detect every 5th video frame and reuse results in between | Meets the "every 5th frame" speed requirement while still giving every frame boxes and a count |
 | Detector and annotator as separate classes | The model can be swapped (for example to YOLO-World) without touching drawing code |
 | Image and video share a `Processor` base class | Same flow, different frame source; keeps the page code simple |
@@ -195,6 +199,8 @@ shelf-counter/
   requirements.txt
   .env.example
   .gitignore
+  .streamlit/
+    config.toml
   README.md
   STARTUP.md
   docs/
@@ -217,12 +223,15 @@ shelf-counter/
     test_validator.py
     test_video.py
     test_errors.py
+    test_security.py
   samples/
     inputs/
     outputs/
 ```
 
 ## 10. Known technical risks
+
+- `wheel` 0.45.1 (CVE-2026-24049, path traversal in `wheel unpack`) is pinned by `inference` (`wheel<=0.45.1`). Not reachable from the app, which never unpacks wheels. Upgrade when `inference` allows it.
 
 - Video output format: OpenCV can only write MPEG-4 Part 2 (`mp4v`), which browsers do not play. Resolved: the video processor re-encodes to H.264 with ffmpeg. Without ffmpeg the video still downloads but may not play in the page.
 - Local CPU inference may exceed 5 seconds. Measure in Phase 2 and consider resizing images or hosted inference.

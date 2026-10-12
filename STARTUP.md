@@ -87,7 +87,15 @@ All tests should pass. They do not call Roboflow, so they work before the key is
 streamlit run app.py
 ```
 
-It opens http://localhost:8501 in your browser. If it does not, open that address yourself.
+This only works while the venv from step 3 is active. Without activating it, run `.venv/bin/streamlit run app.py`
+(Windows: `.venv\Scripts\streamlit run app.py`).
+
+It opens http://localhost:8501 in your browser. If it does not, open that address yourself. The title shows within
+a few seconds, then the page says "Loading the model..." for 10 to 30 seconds, longest on the first start after a
+reboot. Once that message is gone, uploads are fast.
+
+The app only accepts connections from this laptop. To let others on your network open it on purpose, run
+`streamlit run app.py --server.address 0.0.0.0`.
 
 ## 8. Try it
 
@@ -115,10 +123,11 @@ Results are saved in `outputs/`.
 | --- | --- |
 | `No matching distribution found for inference` or `torch` | Your Python is too new or too old. Recreate the venv with Python 3.12 (step 3) |
 | `Disk quota exceeded` or `No space left on device` during install | `/tmp` is too small. Run `mkdir -p ~/.cache/pip-tmp` and then `TMPDIR=~/.cache/pip-tmp pip install -r requirements.txt` |
-| `ModuleNotFoundError: No module named 'inference'` | The venv is not active. Run `source .venv/bin/activate` (step 3) |
+| `streamlit: command not found` or `ModuleNotFoundError: No module named 'inference'` | The venv is not active. Run `source .venv/bin/activate` (step 3), or use `.venv/bin/streamlit run app.py` |
+| Browser shows a blank or grey page | Check the terminal: if `streamlit run` printed an error, fix that first. Otherwise wait 30 seconds; the first start after a reboot is slow. Make sure you opened http://localhost:8501 |
 | Page says the API key or MODEL_ID is not set | Check that `.env` exists in this folder, is saved, and has your real key (step 5). Restart the app |
 | Page says Roboflow rejected the API key | The key is wrong or was copied with extra characters. Copy it again from Roboflow and restart |
-| Page says it could not reach Roboflow | Check your internet connection. Once the model has been downloaded, the app also works offline |
+| Page says it could not reach Roboflow | Check your internet connection. Once the model has been downloaded (to `~/.cache/shelf-counter/models`), the app also works offline |
 | Video downloads but does not play in the page | ffmpeg is missing. Install it (step 1) and restart the app |
 | `Port 8501 is already in use` | Another copy is running. Stop it, or run `streamlit run app.py --server.port 8502` |
 

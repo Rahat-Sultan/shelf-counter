@@ -1,3 +1,6 @@
+import cv2
+import numpy as np
+
 from src.validator import validate
 
 
@@ -11,7 +14,7 @@ def test_rejects_unsupported_type(tmp_path):
 
 def test_accepts_small_image(tmp_path):
     f = tmp_path / "shelf.jpg"
-    f.write_bytes(b"\xff\xd8\xff")
+    cv2.imwrite(str(f), np.zeros((40, 60, 3), np.uint8))
     result = validate(f)
     assert result.ok
     assert result.kind == "image"

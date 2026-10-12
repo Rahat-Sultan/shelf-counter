@@ -38,6 +38,10 @@ The page opens at http://localhost:8501. Upload a photo to see it boxed and coun
 and a download button. The sidebar slider changes the confidence threshold (default 0.3). The first upload also
 loads the model; later uploads reuse it.
 
+The title appears within a few seconds; the model then loads for 10 to 30 seconds (longest after a reboot) while
+the page shows "Loading the model...". If `streamlit` is not found, the venv is not active: activate it or run
+`.venv/bin/streamlit run app.py`. See [STARTUP.md](STARTUP.md) for more fixes.
+
 To box and count photos from the command line (no web page):
 
 ```bash
@@ -92,6 +96,21 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 - Very dark photos return fewer products (a shelf darkened to 15% brightness dropped from 230 to 155).
 - Video takes longer than images: a 10-second 4K 60 fps clip takes about 35 seconds on a laptop CPU.
   Lower resolution or frame rate clips are faster. The page shows a progress bar.
+
+## Security and privacy
+
+- The app only accepts connections from this laptop (`.streamlit/config.toml` sets `server.address = "localhost"`).
+  Streamlit's default would let anyone on the same network use it.
+- Photos and videos never leave the laptop: the model runs locally. The `inference` package reports usage counts
+  to Roboflow (frame counts, durations, a hashed API key), not images.
+- The API key stays in `.env`, which Git ignores. `.env` is read only by the app's own settings, not exported
+  to the environment.
+- Uploads are checked before they are decoded: file type, file size (10 MB images, 100 MB video), image size from
+  the file header (100 megapixels, which blocks "decompression bomb" files) and video length (30 seconds).
+- The model is cached in `~/.cache/shelf-counter/models` (override with `MODEL_CACHE_DIR`), not in `/tmp`, so it
+  survives a reboot and the app keeps working offline.
+- Known and accepted: `wheel` 0.45.1 has CVE-2026-24049, a path traversal in the `wheel unpack` command.
+  `inference` requires `wheel<=0.45.1`, and this app never unpacks wheel files.
 
 ## Project layout
 

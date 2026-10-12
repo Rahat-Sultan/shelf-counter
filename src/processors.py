@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import shutil
 import subprocess
@@ -6,15 +8,20 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import cv2
 import supervision as sv
 
 from src import config
 from src.annotator import Annotator
-from src.detector import ShelfDetector
 from src.errors import UserFacingError
 from src.validator import UNREADABLE_IMAGE, UNREADABLE_VIDEO
+
+if TYPE_CHECKING:
+    # Type hints only: importing the detector imports inference, which is slow and is not needed
+    # until the model is loaded.
+    from src.detector import ShelfDetector
 
 logger = logging.getLogger(__name__)
 

@@ -7,7 +7,6 @@ import streamlit as st
 
 from src import config
 from src.annotator import Annotator
-from src.detector import ShelfDetector
 from src.errors import friendly_message
 from src.processors import ImageProcessor, VideoProcessor
 from src.validator import validate
@@ -34,8 +33,12 @@ for warning in config.WARNINGS:
     st.warning(warning)
 
 
-@st.cache_resource(show_spinner="Loading the model (first run only)...")
-def load_detector() -> ShelfDetector:
+@st.cache_resource(show_spinner="Loading the model. The first start after a reboot can take up to 30 seconds...")
+def load_detector():
+    """Loads the model once per server. Imported here because importing inference takes 10 to 20 seconds,
+    and doing it at the top of this file would leave the page blank for that long."""
+    from src.detector import ShelfDetector
+
     return ShelfDetector(config.MODEL_ID, config.ROBOFLOW_API_KEY, config.CONFIDENCE)
 
 
@@ -50,6 +53,16 @@ confidence = st.sidebar.slider(
 st.sidebar.caption(f"Model: `{config.MODEL_ID}`")
 
 uploaded = st.file_uploader("Choose a file", type=None)
+
+if uploaded is None:
+    # Warm the model while the user picks a file, so the first upload is fast and a bad key or
+    # model ID is reported straight away rather than after the first upload.
+    try:
+        load_detector()
+    except Exception as exc:
+        logger.exception("Loading the model failed")
+        st.error(friendly_message(exc))
+        st.stop()
 
 if uploaded is not None:
     name = Path(uploaded.name)

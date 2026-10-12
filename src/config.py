@@ -44,6 +44,9 @@ IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 VIDEO_EXTENSIONS = {".mp4"}
 
 MAX_IMAGE_MB = 10
+# A small file can still decode to a huge image (a "decompression bomb"): a 17 KB PNG can need 430 MB.
+# The width x height is read from the file header before decoding. 100 MP covers 48 to 50 MP phone photos.
+MAX_IMAGE_MEGAPIXELS = 100
 MAX_VIDEO_MB = 100
 MAX_VIDEO_SECONDS = 30
 

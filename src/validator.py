@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import cv2
+from PIL import Image
 
 from src import config
 
@@ -15,6 +16,22 @@ class ValidationResult:
 
 UNREADABLE_IMAGE = "This file could not be read as an image. It may be damaged, or not really a .jpg or .png file."
 UNREADABLE_VIDEO = "This video could not be read. It may be damaged or incomplete. Try another .mp4 file."
+
+
+def image_megapixels(path: Path) -> float | None:
+    """Width x height in megapixels, read from the file header without decoding the image.
+
+    Returns None if the header cannot be read, and infinity if Pillow itself refuses the image as a
+    decompression bomb (above about 179 MP), which is far over our limit anyway.
+    """
+    try:
+        with Image.open(path) as img:
+            width, height = img.size
+    except Image.DecompressionBombError:
+        return float("inf")
+    except Exception:
+        return None
+    return width * height / 1_000_000
 
 
 def video_duration_seconds(path: Path) -> float:
@@ -47,6 +64,15 @@ def validate(path: str | Path) -> ValidationResult:
         # Checks the file signature only, so a renamed text file is rejected without decoding.
         if not cv2.haveImageReader(str(path)):
             return ValidationResult(False, message=UNREADABLE_IMAGE)
+        megapixels = image_megapixels(path)
+        if megapixels is None:
+            return ValidationResult(False, message=UNREADABLE_IMAGE)
+        if megapixels > config.MAX_IMAGE_MEGAPIXELS:
+            return ValidationResult(
+                False,
+                message=f"Image is {f'{megapixels:.0f}' if megapixels != float('inf') else 'over 179'} megapixels. "
+                f"The limit is {config.MAX_IMAGE_MEGAPIXELS} megapixels.",
+            )
         return ValidationResult(True, kind="image")
 
     if ext in config.VIDEO_EXTENSIONS:

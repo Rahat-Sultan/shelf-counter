@@ -1,17 +1,3 @@
-import requests
-from inference.core.exceptions import (
-    RoboflowAPIConnectionError,
-    RoboflowAPINotAuthorizedError,
-    RoboflowAPINotNotFoundError,
-)
-from inference_models.errors import (
-    ForbiddenModelAccessError,
-    ModelRetrievalError,
-    PaymentRequiredModelAccessError,
-    UnauthorizedModelAccessError,
-    UsagePausedModelAccessError,
-)
-
 from src import config
 
 
@@ -23,6 +9,23 @@ def friendly_message(exc: Exception) -> str:
     """Turns any exception into a plain-English message. Never includes a stack trace."""
     if isinstance(exc, UserFacingError):
         return str(exc)
+
+    # Imported here, not at the top: importing inference takes 10 to 20 seconds, and this module is loaded
+    # before the page is drawn. By the time a model error can happen, inference is already imported.
+    import requests
+    from inference.core.exceptions import (
+        RoboflowAPIConnectionError,
+        RoboflowAPINotAuthorizedError,
+        RoboflowAPINotNotFoundError,
+    )
+    from inference_models.errors import (
+        ForbiddenModelAccessError,
+        ModelRetrievalError,
+        PaymentRequiredModelAccessError,
+        UnauthorizedModelAccessError,
+        UsagePausedModelAccessError,
+    )
+
     if isinstance(exc, (PaymentRequiredModelAccessError, UsagePausedModelAccessError)):
         return "Roboflow refused to serve the model because of the account's plan or usage limits. Check your Roboflow account."
     if isinstance(exc, (ForbiddenModelAccessError, UnauthorizedModelAccessError, RoboflowAPINotAuthorizedError)):

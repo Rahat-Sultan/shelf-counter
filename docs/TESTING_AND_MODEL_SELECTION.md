@@ -118,6 +118,24 @@ Extra cases added in Phase 5:
 | `CONFIDENCE=abc` or `1.5` in `.env` | Warning on the page, falls back to 0.3 or 0.95 |
 | 4000x3000 phone-size photo | 0.21 s |
 
+### Security and robustness scan (2026-10-12)
+
+| Check | Result |
+| --- | --- |
+| Known vulnerabilities, all 226 installed packages (`pip-audit`) | 1: `wheel` 0.45.1, CVE-2026-24049, only in `wheel unpack`; accepted, `inference` pins it |
+| Static security scan (`bandit`) | Only the ffmpeg call is flagged; it uses an argument list with no shell, and app-created paths |
+| Lint for bugs (`ruff`) | Style notes only, no logic bugs |
+| Secrets in Git history | None; `.env` was never committed |
+| 17 KB PNG that decodes to 144 MP | Was accepted and used 886 MB of memory. Now: "Image is 144 megapixels. The limit is 100 megapixels." |
+| 194 KB PNG that decodes to 1600 MP | Now: "Image is over 179 megapixels. ..." |
+| Server reachable from the network | Was: listened on all interfaces (LAN and public URL printed). Now: 127.0.0.1 only |
+| Model cache after reboot | Was in `/tmp/cache`, wiped on reboot. Now in `~/.cache/shelf-counter/models` |
+| Time until the page shows | Was 20 to 25 s of blank page after a reboot. Now the title shows within 4 s and the full page by 12 s |
+| Portrait phone video (rotation flag) | Correct: 360x640 in and out, not squashed |
+| 0.5 fps video | Correct: 3 frames, 6 s, H.264 |
+| `samples/outputs/` in Git | Was ignored by the `outputs/` rule. Now only the top-level `/outputs/` is ignored |
+| Wrong API key | Now reported as soon as the page loads, not after the first upload |
+
 ## 4. Performance checks
 
 | Check | Target | How |
