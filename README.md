@@ -6,6 +6,7 @@ Uses a pretrained model from Roboflow Universe, so there is no data labeling or 
 ## Setup
 
 New to the project? Follow [STARTUP.md](STARTUP.md) for a step-by-step setup with checks and fixes for common problems.
+To put it on a live link, follow [DEPLOY.md](DEPLOY.md).
 
 Requires Python 3.10 to 3.12. The `inference` package does not support newer Python versions yet,
 so if your default `python` is 3.13 or later, create the venv with `python3.12` instead.
@@ -117,6 +118,8 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 
 ```
 STARTUP.md          step-by-step setup guide
+DEPLOY.md           step-by-step deployment guide (livemy.app, other Docker hosts)
+Dockerfile          container image for hosting
 app.py              Streamlit page
 src/config.py       settings and limits
 src/validator.py    file type, size, duration and readability checks

@@ -24,8 +24,9 @@ missing = [
 ]
 if missing:
     st.error(
-        f"{' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} not set in the .env file. "
-        "Copy .env.example to .env, fill in your values, then restart the app. See the README for setup."
+        f"{' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} not set. On your laptop, copy "
+        ".env.example to .env and fill in your values. On a hosting platform, add them as environment variables. "
+        "Then restart the app. See STARTUP.md or DEPLOY.md."
     )
     st.stop()
 

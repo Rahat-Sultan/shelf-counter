@@ -99,7 +99,7 @@ Run through the real page with Streamlit's test harness. All passed.
 | T7 | "Video is 31.0 seconds long. The limit is 30 seconds." |
 | T8 | "Video is 145.9 MB. The limit is 100 MB." |
 | T9 | Blank and black photos: 0 products. Shelf darkened to 15%: 156 products |
-| T10 | "ROBOFLOW_API_KEY is not set in the .env file. ..." (also for the `.env.example` placeholder) |
+| T10 | "ROBOFLOW_API_KEY is not set. On your laptop, copy .env.example to .env ... On a hosting platform, add them as environment variables. ..." (also for the `.env.example` placeholder) |
 | T11 | Each file processed independently, nothing left over |
 | T12 | Same photo twice: 230 both times |
 

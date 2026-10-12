@@ -1,0 +1,11 @@
+# Never copy the API key into an image. Hosts pass it as an environment variable instead.
+.env
+.venv/
+venv/
+.git/
+outputs/
+__pycache__/
+*.pyc
+.pytest_cache/
+.agents/
+.claude/
