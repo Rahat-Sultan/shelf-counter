@@ -49,10 +49,14 @@ We deploy `develop` first. Once it works, it is merged into `master` (step 10).
 ## Step 3. Sign in and connect GitHub
 
 1. Go to https://share.streamlit.io and select **Continue with GitHub**.
-2. Approve the access Streamlit asks for. It needs access to **private repositories**, otherwise
-   `shelf-counter` will not appear in the list.
+2. Signing in only gives access to public repositories. Because `shelf-counter` is private, add private access:
+   1. Select your **GitHub username** in the upper left, then **Settings**.
+   2. Select **Linked accounts**.
+   3. Under **Source control**, select **Connect here**.
+   4. On GitHub, select **Authorize streamlit**.
 
-**Check:** you land in your Community Cloud workspace.
+**Check:** you land in your Community Cloud workspace, and Linked accounts shows GitHub as connected. Without the
+private access, step 4 says "This repository does not exist".
 
 ## Step 4. Create the app
 
@@ -64,7 +68,7 @@ We deploy `develop` first. Once it works, it is merged into `master` (step 10).
    | --- | --- |
    | Repository | `Rahat-Sultan/shelf-counter` |
    | Branch | `develop` |
-   | Main file path | `app.py` |
+   | Main file path | `app.py` (the form fills in `streamlit_app.py`; change it) |
    | App URL (optional) | for example `shelf-counter-rahat` |
 
 ## Step 5. Advanced settings: Python version and secrets
@@ -164,7 +168,9 @@ Only one private app is allowed at a time, so the old one must be deleted first.
 | "This app has gone over its resource limits" | Not enough memory, usually from a large 4K video. Reboot the app and use photos or shorter 1080p videos. If it keeps happening, the lighter "hosted model" option can be added (see `docs/MOBILE_PLAN.md`, section 7) |
 | Page stays grey for more than a minute | Open **Manage app** and read the log for an error, then see the rows above |
 | "This app has gone to sleep" | Select the button to wake it, and wait about a minute |
-| `shelf-counter` is not in the repository list | Streamlit has no access to private repos. Re-approve the GitHub access with private repositories (step 3) |
+| "This repository does not exist" for `Rahat-Sultan/shelf-counter` | Streamlit has no access to private repos. Add it in step 3 (Settings, Linked accounts, Connect here). If it still fails, revoke the **Streamlit** app (not "Streamlit Community Cloud") at github.com/settings/applications, sign out of share.streamlit.io, and sign in again |
+| "This branch does not exist" once the repo is found | `develop` is not on GitHub yet. Run `git push -u origin develop` (step 2) and reload |
+| "This file does not exist" | The main file path is still `streamlit_app.py`. Change it to `app.py` |
 
 ## Other hosts
 
