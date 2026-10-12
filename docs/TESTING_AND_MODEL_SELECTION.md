@@ -184,3 +184,17 @@ Name pairs consistently, for example `01_clean_shelf.jpg` and `01_clean_shelf_an
 - [ ] Model is cached so the first demo upload is not slow (run one upload beforehand).
 - [ ] Demo photo and video are ready and contain no people.
 - [ ] All acceptance criteria in `PRD.md` are ticked.
+
+## 8. Phase 7 checks (2026-10-12)
+
+| Check | Result |
+| --- | --- |
+| `.heic` photo through the page | Counted (232 products; the same photo as JPEG gives 230) |
+| HEIC with a camera rotation flag | Rotated correctly before detection (`tests/test_formats.py`) |
+| `.mov` in H.264 and in HEVC, including a portrait rotation flag | Processed to a playable H.264 `.mp4` with a count for every frame |
+| Text renamed to `.heic` | "This file could not be read as an image. ..." |
+| **Take a photo** in Chrome with a fake camera, desktop and phone width | Photo captured, counted, download shown |
+| **Detection settings** popover on a phone | Opens with the slider and model name; no hidden sidebar |
+| Metrics on a phone | Side by side; the result photo starts near the top |
+| Community Cloud install with `pillow-heif==1.8.1` | Resolves with `uv` for Python 3.12 |
+| Unit tests | 43 passed |

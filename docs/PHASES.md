@@ -1,6 +1,10 @@
 # Project Phases
 
-This plan breaks the project into seven phases. Phases 0 to 2 are the foundation, 3 to 5 are the build, and 6 is delivery. Phase 1 is the biggest risk, because everything after it depends on the model being good.
+This plan breaks the project into nine phases. Phases 0 to 2 are the foundation, 3 to 5 are the build, and 6 is delivery. Phases 7 and 8 were added on 12 October 2026 to make the app work well on phones and to put it online ([MOBILE_PLAN.md](MOBILE_PLAN.md)). Phase 1 is the biggest risk, because everything after it depends on the model being good.
+
+Status on 12 October 2026: Phases 0 to 5, 7 and 8 are done. Phase 6 is partly done: the documentation is written; the samples, the teammate test and the demo are still open. What each phase delivered is summarised in [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md), section 15.
+
+![Project phases](images/09_phases.png)
 
 Effort estimates are suggestions only. The brief gives no deadline.
 
@@ -12,6 +16,8 @@ flowchart LR
     P3 --> P4[Phase 4<br/>Video]
     P4 --> P5[Phase 5<br/>Errors and speed]
     P5 --> P6[Phase 6<br/>Docs and demo]
+    P6 --> P7[Phase 7<br/>Phones]
+    P7 --> P8[Phase 8<br/>Deploy]
 ```
 
 | Phase | Name | Suggested effort | Main output |
@@ -23,6 +29,8 @@ flowchart LR
 | 4 | Video support | 1 to 2 days | Annotated video with per-frame counts |
 | 5 | Validation and error handling | 0.5 to 1 day | Clear errors, speed check |
 | 6 | Docs and deliverables | 1 day | README, samples, demo |
+| 7 | Phone-friendly web app | 1 to 2 days | Camera mode, iPhone formats, phone layout |
+| 8 | Deploy on Streamlit Community Cloud | 0.5 to 1 day | Private HTTPS link |
 
 ---
 
@@ -159,12 +167,52 @@ flowchart LR
 **Tasks**
 
 - [ ] Finish the README: setup, how to run, model ID and why, known limits. _(done except the missed-products numbers and the model license)_
+- [x] Write the setup guide (STARTUP.md), the deployment guide (DEPLOY.md), a detailed PRD and the project documentation with diagrams (PROJECT_DOCUMENTATION.md).
 - [ ] Pick 5 example inputs, including good results and honest limits. Save each input and its annotated output in `samples/`.
 - [ ] Ask a teammate to follow the README cold and time them. Fix anything that slows them down.
 - [ ] Rehearse the demo: one photo, one video, results on screen.
 - [ ] Final check of the acceptance criteria in `PRD.md`.
 
 **Exit criteria:** all acceptance criteria and deliverables in `PRD.md` are ticked.
+
+---
+
+## Phase 7: Phone-friendly web app (done 12 October 2026)
+
+**Goal:** the Streamlit app works well in a phone browser, including taking the photo with the camera.
+
+**Tasks**
+
+- [x] Add **Take a photo** with `st.camera_input` (1080p requested), switched with a segmented control.
+- [x] Accept iPhone photos (`.heic`, `.heif`): read with `pillow-heif`, apply the EXIF rotation, show a preview.
+- [x] Accept iPhone videos (`.mov`, H.264 or HEVC); the result is always an H.264 `.mp4`.
+- [x] Move the confidence slider from the sidebar (hidden on phones) into a **Detection settings** popover.
+- [x] Keep the metrics side by side on phones, so the result photo is near the top.
+- [x] Add the "keep people out of the frame" reminder and alt text on images, video and chart.
+- [x] Tests for HEIC and `.mov` (`tests/test_formats.py`); check in Chrome at desktop and phone size with a fake camera.
+- [ ] Watch it on a real iPhone after the next push: a `.heic` photo and a `.mov` video.
+
+**Exit criteria:** from a phone, a photo and a 10-second video come back counted. _(Met in Chrome at phone size;
+confirm on a real phone once pushed.)_
+
+---
+
+## Phase 8: Deploy on Streamlit Community Cloud (done 12 October 2026)
+
+**Goal:** a free, private HTTPS link that works on a laptop and a phone.
+
+**Tasks**
+
+- [x] Prepare the repo: `packages.txt` (ffmpeg and OpenCV system libraries), `uv.toml` (CPU-only PyTorch resolves
+  with Community Cloud's installer), no fixed server address, memory released after each video.
+- [x] Load Streamlit secrets before the settings are read, so the key in the Secrets box is used.
+- [x] Deploy from the private repo with Python 3.12 and the four secrets; invite viewers by email.
+- [x] Write [DEPLOY.md](../DEPLOY.md), including what went wrong (Python 3.14 default, private repo access).
+- [ ] Point the app at `master` once the merged version is pushed (DEPLOY.md step 10).
+
+**Exit criteria:** invited viewers open the link on a phone and get a counted photo. _(Met.)_
+
+Tried and dropped first: livemy.app (free plan too small, no settings screen). Vercel cannot run Streamlit.
 
 ---
 

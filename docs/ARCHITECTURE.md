@@ -1,5 +1,8 @@
 # Architecture
 
+The full, illustrated explanation of the modules and how they interact is in
+[PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md). This document keeps the design decisions and diagrams.
+
 ## 1. Overview
 
 The app is a single local Python process. A Streamlit page accepts an upload, a validator checks it, a processor runs it through the detector, and an annotator draws the result. The only external dependency is the Roboflow shelf model.
@@ -12,6 +15,7 @@ The app is a single local Python process. A Streamlit page accepts an upload, a 
 | Config | `src/config.py` | Settings and limits, reads `.env` |
 | Validator | `src/validator.py` | Checks file type, size, video duration, and that the file can be read, before any processing |
 | Errors | `src/errors.py` | Turns model, key and network failures into plain-English messages |
+| Image reading | `src/image_io.py` | Header check and decoding for JPEG, PNG and iPhone HEIC photos |
 | Detector | `src/detector.py` | Wraps Roboflow Inference; returns Supervision `Detections` |
 | Annotator | `src/annotator.py` | Draws boxes and the product count on a frame |
 | Image processor | `src/processors.py` | Image path: read, detect, annotate, save |
@@ -213,6 +217,7 @@ shelf-counter/
     config.py
     validator.py
     errors.py
+    image_io.py
     detector.py
     annotator.py
     processors.py
@@ -225,6 +230,7 @@ shelf-counter/
     test_video.py
     test_errors.py
     test_security.py
+    test_formats.py
   samples/
     inputs/
     outputs/

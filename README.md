@@ -125,6 +125,7 @@ Dockerfile          container image for hosting
 app.py              Streamlit page
 src/config.py       settings and limits
 src/validator.py    file type, size, duration and readability checks
+src/image_io.py     reading JPEG, PNG and iPhone HEIC photos
 src/errors.py       plain-English messages for model, key and network errors
 src/detector.py     Roboflow model wrapper
 src/annotator.py    boxes and count overlay
@@ -132,12 +133,14 @@ src/processors.py   image and video pipelines
 scripts/            command-line tools: count_image, evaluate, probe_models
 tests/              unit tests
 samples/            5 example inputs and outputs
-docs/               project documentation (see below)
+docs/               project documentation (see below); docs/images/ holds the diagrams and screenshots,
+                    docs/figures/ the scripts that regenerate them
 ```
 
 ## Documentation
 
-- [Product requirements](docs/PRD.md): goals, scope, requirements, acceptance criteria, risks
+- [Project documentation](docs/PROJECT_DOCUMENTATION.md): what was built, every module and how they interact, phases, decisions, limits and open items, with diagrams and screenshots
+- [Product requirements](docs/PRD.md): goals, scope, every requirement with its status, acceptance criteria, risks
 - [Project phases](docs/PHASES.md): the seven phases with tasks and exit criteria
 - [Architecture](docs/ARCHITECTURE.md): components, diagrams, database decision, design choices
 - [Testing and model selection](docs/TESTING_AND_MODEL_SELECTION.md): model comparison method, test matrix, demo script
