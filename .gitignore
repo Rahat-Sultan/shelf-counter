@@ -7,3 +7,5 @@ __pycache__/
 /outputs/
 *.pyc
 .DS_Store
+# MCP client configs can hold access tokens (for example the livemy.app token).
+.mcp.json
