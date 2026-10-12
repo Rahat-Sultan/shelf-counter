@@ -8,7 +8,7 @@ and C below are kept for reference and are not planned. · Branch: `develop`
 | Phase | Goal | Main tasks | Exit criteria |
 | --- | --- | --- | --- |
 | 7. Phone-friendly web app | The Streamlit app works well on a phone browser | Test the upload box's "Take photo" and "Record video" on Android and iPhone over the same Wi-Fi; accept iPhone `.heic` photos and `.mov` videos; add "Take a photo" with `st.camera_input` for laptops; check the layout at phone width (found 2026-10-12: the confidence slider is hidden in the collapsed sidebar, and the two stacked metrics push the result image below the first screen); reminder to keep people out of the frame | From a phone on the same Wi-Fi, a photo and a 10-second video come back counted |
-| 8. Deploy on Streamlit Community Cloud | A free HTTPS link | Deploy from the private GitHub repo with Python 3.12, `ROBOFLOW_API_KEY`, `MODEL_ID` and `PRODUCT_CLASS` as secrets; invite viewers by email; check memory and the first-load time | Invited viewers open the link on a phone and get a counted photo |
+| 8. Deploy on Streamlit Community Cloud **(done 2026-10-12: https://shelf-counter-rahat.streamlit.app, private, Python 3.12; works on a phone and with the laptop camera)** | A free HTTPS link | Deploy from the private GitHub repo with Python 3.12, `ROBOFLOW_API_KEY`, `MODEL_ID` and `PRODUCT_CLASS` as secrets; invite viewers by email; check memory and the first-load time | Invited viewers open the link on a phone and get a counted photo |
 
 Preparation already done: `packages.txt` (ffmpeg, OpenCV system libraries), `uv.toml` (so Community Cloud's uv
 install resolves CPU-only PyTorch), no fixed server address, and memory released after each video.
