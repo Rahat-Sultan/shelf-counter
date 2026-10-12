@@ -135,3 +135,4 @@ docs/               project documentation (see below)
 - [Project phases](docs/PHASES.md): the seven phases with tasks and exit criteria
 - [Architecture](docs/ARCHITECTURE.md): components, diagrams, database decision, design choices
 - [Testing and model selection](docs/TESTING_AND_MODEL_SELECTION.md): model comparison method, test matrix, demo script
+- [Mobile and web plan](docs/MOBILE_PLAN.md): proposal for a mobile app next to the web app, with phases, pros and cons (needs approval)
