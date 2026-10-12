@@ -11,10 +11,10 @@ For running the app on your own laptop instead, see [STARTUP.md](STARTUP.md).
 | --- | --- | --- |
 | Projects | 1 | 5 |
 | Deploys | 5 a month | more (see the Billing page) |
-| Online time | **24 hours per deploy**, then offline until you redeploy or upgrade | Always on, no sleeping |
+| Online time | **About 3 days per deploy** (the dashboard showed "Goes offline in 2d 23h" right after a deploy on 2026-10-12; the homepage says 24 hours), then offline until you redeploy or upgrade | Always on, no sleeping |
 | HTTPS link | Yes | Yes |
 
-The free plan is enough for **a demo**: deploy on the morning of the demo and the link works for 24 hours. For a
+The free plan is enough for **a demo**: deploy shortly before the demo, and the card on the Projects page shows how long the link stays online ("Goes offline in ..."). For a
 link that stays up, you need Maker or a different host (see the last section).
 
 Plans change, so check the current numbers on the **Billing** page in your livemy.app dashboard.
@@ -78,8 +78,9 @@ Then choose the branch **`develop`**.
 
 ## Step 5. Add the environment variables
 
-Before starting the deploy, open the settings for environment variables (in the deploy options or the project's
-settings) and add:
+Environment variables belong to the **project**, not your account: the **Settings** item in the left menu is only
+for your profile. On the Projects page, look on the project card under **Details**, the **⋯** menu or the pencil
+icon. Add:
 
 | Name | Value |
 | --- | --- |
@@ -145,7 +146,7 @@ Then in livemy.app, change the project's branch to `master` and redeploy. From n
 1. Make and commit the change on `develop`, then `git push`.
 2. In livemy.app, select **Redeploy** for the project.
 
-On the free plan each redeploy uses one of your 5 deploys for the month, and restarts the 24-hour window.
+On the free plan each redeploy uses one of your 5 deploys for the month, and restarts the online window.
 
 Avoid fixing problems with livemy.app's **AI Assist**: it edits the deployed copy, so its changes are not in
 your GitHub repo and are lost or overwritten on the next deploy from GitHub. Fix the code in the repo instead.
@@ -172,7 +173,8 @@ your GitHub repo and are lost or overwritten on the next deploy from GitHub. Fix
 | App restarts, or the logs show "Killed" or "out of memory" | Not enough memory. Choose a bigger size if the dashboard allows it, or use photos and short 1080p videos rather than 4K |
 | Uploads fail with "AxiosError" or a 403 error | The proxy in front of the app blocks Streamlit's upload protection. Add an environment variable `STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION` = `false`, redeploy, and try again |
 | Page loads but stays grey or blank for over a minute | Open the deploy logs and look for an error after "Loading the model". Then see the rows above |
-| Link stopped working after a day | The free plan keeps a deploy online for 24 hours. Redeploy, or upgrade to Maker |
+| Link stopped working after a few days | The free plan keeps a deploy online for a limited time (the card shows "Goes offline in ..."). Redeploy, or upgrade to Maker |
+| No place to add environment variables | Check the project card's **Details**, **⋯** menu and pencil icon. If none has them, ask **Continue with AI Assist** to set `ROBOFLOW_API_KEY` for the project without writing it to any file, and consider creating a fresh Roboflow key afterwards. Or ask support@livemy.app |
 
 ## Other hosts
 
