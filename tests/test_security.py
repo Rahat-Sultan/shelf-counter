@@ -70,3 +70,13 @@ def test_env_and_scratch_outputs_ignored_but_samples_tracked():
     assert ignored(".env")
     assert ignored("outputs/anything.jpg")
     assert not ignored("samples/outputs/01_clean_shelf_annotated.jpg")
+
+
+def test_secrets_load_before_settings_are_read():
+    """Community Cloud secrets reach os.environ only once loaded; src.config reads os.environ on import."""
+    source = (ROOT / "app.py").read_text()
+    assert source.index("st.secrets.load_if_toml_exists()") < source.index("from src import config")
+
+
+def test_local_secrets_file_ignored():
+    assert subprocess.run(["git", "check-ignore", "-q", ".streamlit/secrets.toml"], cwd=ROOT).returncode == 0

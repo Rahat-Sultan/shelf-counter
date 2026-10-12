@@ -1,176 +1,155 @@
-# Deploying the app on livemy.app
+# Deploying the app on Streamlit Community Cloud
 
-Step-by-step guide to put the Shelf Product Counter on a live HTTPS link, so it can be opened from a phone or
-any browser. Plan on 30 to 45 minutes the first time, most of it waiting for the build.
+Step-by-step guide to put the Shelf Product Counter on a free, private HTTPS link that works on a laptop or a
+phone. Plan on 20 to 30 minutes the first time, most of it waiting for the install.
 
 For running the app on your own laptop instead, see [STARTUP.md](STARTUP.md).
 
-## Before you start: what the free plan gives you
+## Before you start: what you get
 
-| | Free | Maker (10 USD a month) |
-| --- | --- | --- |
-| Projects | 1 | 5 |
-| Deploys | 5 a month (a new deploy, for example from another branch) | more (see the Billing page) |
-| Redeploys | 20 a month, counted separately from deploys | more |
-| AI Assist messages | 10 a month | more |
-| Online time | **About 3 days per deploy** (the dashboard showed "Goes offline in 2d 23h" right after a deploy on 2026-10-12; the homepage says 24 hours), then offline until you redeploy or upgrade | Always on, no sleeping |
-| HTTPS link | Yes | Yes |
+| | Streamlit Community Cloud (free) |
+| --- | --- |
+| Cost | Free |
+| Who can open it | **Only people you invite by email**, because the repo is private. You can have one private app at a time |
+| HTTPS link | Yes, `https://<name>.streamlit.app` |
+| Updates | Pushing to the deployed branch updates the app automatically |
+| Sleeping | Sleeps after about 12 hours without visitors. Opening the link wakes it in about a minute |
+| Memory | Not clearly documented (between about 690 MB and 2.7 GB). The app uses about 750 MB with photos and up to 1.25 GB with 4K video, so photos are safe; very large videos may hit the limit |
 
-The free plan is enough for **a demo**: deploy shortly before the demo, and the card on the Projects page shows how long the link stays online ("Goes offline in ..."). For a
-link that stays up, you need Maker or a different host (see the last section).
+## Step 1. Get a fresh Roboflow API key
 
-Plans change, so check the current numbers on the **Billing** page in your livemy.app dashboard.
+The old key was pasted into a chat on another hosting platform, so treat it as leaked.
 
-**Memory:** the app needs about **1.5 GB of RAM** (about 750 MB with the model loaded, up to 1.25 GB while
-processing a 4K video). If the dashboard lets you choose resources, pick 2 GB. If it does not show the
-memory, the app may still work; see "App restarts or shows Killed" in the troubleshooting table.
+1. In Roboflow, open your workspace **Settings → API Keys**.
+2. Create a new private API key and copy it.
+3. Put it in your local `.env` (`ROBOFLOW_API_KEY=...`) so the laptop version keeps working.
+4. **Revoke the old key** in the same screen.
 
-## Step 1. Push the code to GitHub
+**Check:** run the app on your laptop (`streamlit run app.py` from `shelf-counter/`) and count one photo.
 
-livemy.app deploys from the GitHub repo, so everything must be pushed first. In a terminal:
+## Step 2. Push the code to GitHub
+
+Community Cloud deploys from GitHub, so everything must be pushed. From inside `shelf-counter/`:
 
 ```bash
-cd ~/BxTrackSolution/shelf-product-counter-with-roboflow/shelf-counter
 git status                      # should say "nothing to commit"
-git push origin master
 git push -u origin develop
+git push origin master
 ```
 
-When Git asks for a password, paste a GitHub **personal access token**, not your account password:
-github.com → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token,
-with access to `shelf-counter` and **Contents: Read and write**.
+When Git asks for a password, paste a GitHub **personal access token**: github.com → Settings → Developer
+settings → Personal access tokens → Fine-grained tokens, with access to `shelf-counter` and **Contents: Read
+and write**.
 
-**Check:** on https://github.com/Rahat-Sultan/shelf-counter, the branch menu shows `master` and `develop`, and
-`develop` contains `Dockerfile` and `DEPLOY.md`.
+**Check:** on https://github.com/Rahat-Sultan/shelf-counter, the `develop` branch has `packages.txt`, `uv.toml`
+and `DEPLOY.md`. These files tell Community Cloud what to install.
 
-We deploy the `develop` branch first. Once it works, merge it into `master` (step 9).
+We deploy `develop` first. Once it works, it is merged into `master` (step 10).
 
-## Step 2. Know what the deploy files do
+## Step 3. Sign in and connect GitHub
 
-You do not need to edit these. They are already in the repo:
+1. Go to https://share.streamlit.io and select **Continue with GitHub**.
+2. Approve the access Streamlit asks for. It needs access to **private repositories**, otherwise
+   `shelf-counter` will not appear in the list.
 
-| File | What it does |
-| --- | --- |
-| `Dockerfile` | Builds the app with Python 3.12, ffmpeg and the libraries OpenCV needs, then starts Streamlit on the port the host gives it (`PORT`, or 8501) |
-| `.dockerignore` | Keeps `.env`, `.venv` and scratch files out of the image, so your API key is never copied |
-| `requirements.txt` | Exact package versions, with the small CPU-only PyTorch |
-| `.streamlit/config.toml` | 100 MB upload limit, usage statistics off |
-| `packages.txt`, `uv.toml` | Only used by Streamlit Community Cloud; livemy.app ignores them |
+**Check:** you land in your Community Cloud workspace.
 
-## Step 3. Create the project
+## Step 4. Create the app
 
-1. Sign in at https://my.livemy.app/.
-2. Select **New project**.
-3. Choose **GitHub repository** and paste: `https://github.com/Rahat-Sultan/shelf-counter`
+1. Select **Create app** (upper right).
+2. When asked "Do you already have an app?", select **Yup, I have an app**.
+3. Fill in:
 
-**Check:** livemy.app asks for access, because the repo is private. Go to step 4.
+   | Field | Value |
+   | --- | --- |
+   | Repository | `Rahat-Sultan/shelf-counter` |
+   | Branch | `develop` |
+   | Main file path | `app.py` |
+   | App URL (optional) | for example `shelf-counter-rahat` |
 
-## Step 4. Give livemy.app read access to the repo
+## Step 5. Advanced settings: Python version and secrets
 
-Pick one:
+Select **Advanced settings** before deploying.
 
-- **Authorize with GitHub (easiest):** select it, approve in the GitHub window, and choose **Only select
-  repositories → shelf-counter**. livemy.app only needs to read the code.
-- **Access token:** create a fine-grained token with access to `shelf-counter` only and **Contents: Read**,
-  then paste it into the **Access token** field. Use a new read-only token, not the one from step 1.
+1. **Python version:** choose **3.12**. Newer versions do not work, because the `inference` package does not
+   support them yet.
+2. **Secrets:** paste the following, with your new key from step 1 between the quotes:
 
-Then choose the branch **`develop`**.
+   ```toml
+   ROBOFLOW_API_KEY = "paste-your-new-key-here"
+   MODEL_ID = "planogram_sku110k/1"
+   PRODUCT_CLASS = "0"
+   CONFIDENCE = "0.3"
+   ```
 
-**Check:** the branch list loaded and `develop` is selected.
+   Keep the quotes and the spaces around `=` exactly as shown. The Secrets box is private: only you can see it,
+   and it is never written to GitHub.
+3. Select **Save**, then **Deploy**.
 
-## Step 5. Add the deploy context
+## Step 6. Wait for the install
 
-livemy.app has **no screen for environment variables**. Its AI agent builds the app and writes the settings into a
-`.env` file on the server (`/home/appuser/app/.env`). You tell the agent what it needs in the **Deploy context**
-box of the deploy dialog. Paste this, without your API key:
+Community Cloud installs about 1.5 GB of packages (CPU-only PyTorch, Roboflow Inference, Streamlit and ffmpeg),
+so the first deploy takes **5 to 15 minutes**. Select **Manage app** in the lower right of the app page to watch
+the log.
 
-> Shelf Product Counter is a Streamlit web app that counts products on retail shelves. Build it with the
-> `Dockerfile` in the repository root (Python 3.12, ffmpeg and the OpenCV system libraries are needed) rather than
-> auto-detecting the stack. The container starts Streamlit on the port in `PORT` (default 8501) and needs about
-> 1.5 GB of RAM. Set `MODEL_ID=planogram_sku110k/1`, `PRODUCT_CLASS=0` and `CONFIDENCE=0.3`. I will provide
-> `ROBOFLOW_API_KEY` after the deploy. Do not commit or push anything to the Git repository.
+**Check:** the log ends with the app starting, and the page shows "Shelf Product Counter" with "Loading the
+model...". The first load takes 10 to 30 seconds while the model downloads (about 7.5 MB).
 
-The API key is added after the deploy, in step 7. Until then the page shows "ROBOFLOW_API_KEY is not set",
-which is expected.
+## Step 7. Test the live app
 
-## Step 6. Deploy and watch the build
+1. Upload a shelf photo. You should see boxes, a count and a download button in about a second.
+2. Upload a short `.mp4` video. A progress bar runs, then the annotated video, a chart and two downloads appear.
+3. Upload a `.pdf`. You should see "Unsupported file type...".
 
-Start the deploy. livemy.app scans the code, builds the image from the `Dockerfile`, and starts it. Progress
-shows step by step in the dashboard.
+**Check:** all three behave as described.
 
-The first build takes **5 to 15 minutes**: it downloads about 1.5 GB of packages, which take about 3 GB once
-installed. Later builds are faster.
+## Step 8. Test from a phone
 
-**Check:** the project shows **Live** and a public URL. If it shows **Failed**, see the troubleshooting table.
-
-## Step 7. Add the API key with AI Assist
-
-1. On the project card, select **Continue with AI Assist**.
-2. Send this message, with your Roboflow private API key in place of `<your key>`:
-
-   > Set `ROBOFLOW_API_KEY=<your key>` in `/home/appuser/app/.env`, and keep `MODEL_ID=planogram_sku110k/1`,
-   > `PRODUCT_CLASS=0` and `CONFIDENCE=0.3`. Then run `cd /home/appuser/app && docker compose up -d` so the
-   > container picks up the new value, and check the page no longer shows the "not set" error. Do not change the
-   > app's code and do not commit or push anything to the Git repository.
-
-3. Wait for the agent to reply that it is done (a minute or two).
-
-The key passes through livemy.app's AI agent; there is no other way to give it a secret on this platform. If that
-concerns you, create a fresh key in Roboflow afterwards and repeat this step. Each message uses one of your AI
-Assists (10 a month on the free plan).
-
-## Step 8. Test the live app
-
-1. Open the URL. The title appears in a few seconds, then "Loading the model..." for 10 to 30 seconds while the
-   model downloads (about 7.5 MB) and loads. Wait until the message is gone.
-2. Upload a shelf photo. You should see boxes, a count and a download button in about a second.
-3. Upload a short `.mp4` video. A progress bar runs, then the annotated video, a chart and two downloads appear.
-4. Upload a `.pdf`. You should see "Unsupported file type...".
-
-**Check:** all four behave as described.
-
-## Step 9. Test from a phone
-
-1. Open the same URL on your phone.
-2. Tap the upload box. Phones offer **Take photo** (and **Record video**); take a photo of a shelf, with no
-   people in the frame.
+1. Open the same link on your phone and sign in with the invited email (step 9) if asked.
+2. Tap the upload box. Phones offer **Take photo** (and **Record video**). Photograph a shelf with no people in
+   the frame.
 3. You should get the boxed, counted photo back.
 
-iPhone videos are saved as `.mov`, which the app does not accept yet (that is part of Phase 7). On iPhone, test
-with a photo, or a video saved as `.mp4`.
+iPhone videos are saved as `.mov`, which the app does not accept yet (planned for Phase 7). On iPhone, test with
+a photo, or a video saved as `.mp4`.
+
+## Step 9. Share it
+
+The app is private because the repo is private. To let someone open it:
+
+1. Open the app and select **Share** (upper right).
+2. Enter their email address and select **Invite**.
+
+They get an email link and sign in with Google or a one-time email link. Share it only with the people who need
+it: every count uses your Roboflow quota.
 
 ## Step 10. Make it the official version
 
-When steps 8 and 9 work:
+When steps 7 to 9 work, merge `develop` into `master`:
 
 ```bash
-cd ~/BxTrackSolution/shelf-product-counter-with-roboflow/shelf-counter
 git switch master
 git merge develop
 git push origin master
 git switch develop
 ```
 
-Then in livemy.app, change the project's branch to `master` and redeploy. From now on, try changes on
-`develop` first, and merge into `master` only when they work.
+Then point the app at `master`. If the app's settings do not let you change the branch, delete the `develop` app
+(**Manage app → ⋮ → Delete**) and create it again from `master` with steps 4 and 5, pasting the same secrets.
+Only one private app is allowed at a time, so the old one must be deleted first.
 
 ## Updating the app later
 
-1. Make and commit the change on `develop`, then `git push`.
-2. In livemy.app, select **Redeploy** for the project.
-
-On the free plan redeploys are counted separately from deploys (20 a month), and a redeploy restarts the online
-window. Check whether the key survived the redeploy; if the page says "not set" again, repeat step 7.
-
-Avoid fixing problems with livemy.app's **AI Assist**: it edits the deployed copy, so its changes are not in
-your GitHub repo and are lost or overwritten on the next deploy from GitHub. Fix the code in the repo instead.
+- **Code:** commit and push to the deployed branch. The app updates by itself within a minute or two.
+- **Secrets:** open **App settings → Secrets**, change the value, save, then **Reboot app** (Manage app → ⋮ →
+  Reboot). The app reads its settings when it starts, so a reboot is needed.
 
 ## Keeping it safe
 
-- The URL is **public**: anyone who has it can use the app, which uses your Roboflow quota. Share it only with
-  the people who need it, and stop or delete the project after the demo.
-- The API key lives only in livemy.app's environment variables and in your local `.env`. It is never in Git or
-  in the image (`.env` is listed in `.gitignore` and `.dockerignore`).
+- The API key lives only in the app's Secrets on Community Cloud and in your local `.env`. Neither is in Git
+  (`.env` and `.streamlit/secrets.toml` are in `.gitignore`).
+- Never paste the key into a chat, an issue or a commit message. If it happens, create a new key and revoke the
+  old one (step 1).
 - Uploads are still checked before they are processed: file type, 10 MB for images and 100 MB for video,
   100 megapixels, and 30 seconds of video.
 
@@ -178,24 +157,25 @@ your GitHub repo and are lost or overwritten on the next deploy from GitHub. Fix
 
 | What you see | What to do |
 | --- | --- |
-| Build fails on `pip install` with "No matching distribution" for `torch` or `inference` | The host ignored the `Dockerfile` and used a different Python. Make sure `Dockerfile` is in the root of the branch you deploy, and ask livemy.app support how to make it use the Dockerfile |
-| Build fails with "No space left on device" or a time-out | The image is large (about 3.5 GB). Try once more; if it repeats, contact livemy.app support about build limits |
-| App starts, then logs `ImportError: libGL.so.1` | The `Dockerfile` was not used (it installs that library). Same fix as the first row |
-| Page says "ROBOFLOW_API_KEY and MODEL_ID are not set" (or one of them) | Add the variables from step 5, then redeploy |
-| Page says "Roboflow rejected the API key" | The key was copied with a space or a missing character. Paste it again in the environment variables and redeploy |
-| URL shows "Bad gateway" or never loads | The host may expect a different port. The app listens on `PORT` if the host sets it, otherwise 8501. Check the deploy logs for "You can now view your Streamlit app" and the port, and set a `PORT` variable to the port livemy.app expects |
-| App restarts, or the logs show "Killed" or "out of memory" | Not enough memory. Choose a bigger size if the dashboard allows it, or use photos and short 1080p videos rather than 4K |
-| Uploads fail with "AxiosError" or a 403 error | The proxy in front of the app blocks Streamlit's upload protection. Add an environment variable `STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION` = `false`, redeploy, and try again |
-| Page loads but stays grey or blank for over a minute | Open the deploy logs and look for an error after "Loading the model". Then see the rows above |
-| Link stopped working after a few days | The free plan keeps a deploy online for a limited time (the card shows "Goes offline in ..."). Redeploy, or upgrade to Maker |
-| No place to add environment variables | That is expected: livemy.app keeps them in `/home/appuser/app/.env` on the server, and AI Assist edits that file (step 7) |
+| Install fails with "No matching distribution" for `torch` or `inference` | The app is not on Python 3.12. Check **App settings**; if the version cannot be changed there, delete the app and create it again with Python 3.12 (step 5) |
+| Log shows `ImportError: libGL.so.1`, or videos do not play | `packages.txt` was not found. Make sure you deployed the `develop` branch (or `master` after step 10) and that `packages.txt` is in the repo root |
+| Page says "ROBOFLOW_API_KEY ... not set" | The secrets are missing or mistyped. Open **App settings → Secrets**, compare with step 5 (quotes and `=`), save, and **Reboot app** |
+| Page says "Roboflow rejected the API key" | The key is wrong or was revoked. Paste the new key into Secrets, save, and **Reboot app** |
+| "This app has gone over its resource limits" | Not enough memory, usually from a large 4K video. Reboot the app and use photos or shorter 1080p videos. If it keeps happening, the lighter "hosted model" option can be added (see `docs/MOBILE_PLAN.md`, section 7) |
+| Page stays grey for more than a minute | Open **Manage app** and read the log for an error, then see the rows above |
+| "This app has gone to sleep" | Select the button to wake it, and wait about a minute |
+| `shelf-counter` is not in the repository list | Streamlit has no access to private repos. Re-approve the GitHub access with private repositories (step 3) |
 
 ## Other hosts
 
-The same `Dockerfile` works on any host that runs Docker containers, as long as it gives about 1.5 GB of memory.
+The `Dockerfile` in the repo works on any host that runs Docker containers with about 1.5 GB of memory, for
+example Render or a small VPS. It installs Python 3.12, ffmpeg and the OpenCV system libraries and listens on
+`PORT` (or 8501). Set the four settings from step 5 as environment variables there.
 
-- **Streamlit Community Cloud** (free, always on, sleeps after about 12 hours without visitors): deploy from
-  GitHub at share.streamlit.io, choose **Python 3.12** under Advanced settings, and paste the same four
-  variables as secrets, for example `ROBOFLOW_API_KEY = "..."`. It uses `packages.txt` and `uv.toml` instead of
-  the Dockerfile. Its memory limit is not clearly documented, so 4K videos may hit it.
-- **Vercel** cannot run this app (it does not support long-running servers like Streamlit).
+Tried and not recommended for this app:
+
+- **livemy.app (free plan):** the app deployed, but the free plan does not have enough memory for it ("This
+  project is using more resources than your plan provides"), there is no screen for settings, and its AI agent
+  could not restart the app after the key was added.
+- **Vercel:** cannot run Streamlit at all (no long-running servers).
+- **Hugging Face Spaces:** Docker Spaces now need a paid plan.

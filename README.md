@@ -118,7 +118,7 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 
 ```
 STARTUP.md          step-by-step setup guide
-DEPLOY.md           step-by-step deployment guide (livemy.app, other Docker hosts)
+DEPLOY.md           step-by-step deployment guide (Streamlit Community Cloud; Dockerfile for other hosts)
 Dockerfile          container image for hosting
 app.py              Streamlit page
 src/config.py       settings and limits

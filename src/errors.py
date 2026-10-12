@@ -29,10 +29,13 @@ def friendly_message(exc: Exception) -> str:
     if isinstance(exc, (PaymentRequiredModelAccessError, UsagePausedModelAccessError)):
         return "Roboflow refused to serve the model because of the account's plan or usage limits. Check your Roboflow account."
     if isinstance(exc, (ForbiddenModelAccessError, UnauthorizedModelAccessError, RoboflowAPINotAuthorizedError)):
-        return "Roboflow rejected the API key. Check ROBOFLOW_API_KEY in the .env file, then restart the app."
+        return (
+            "Roboflow rejected the API key. Check ROBOFLOW_API_KEY (in the .env file on your laptop, or in the app's "
+            "Secrets on Streamlit Community Cloud), then restart the app."
+        )
     if isinstance(exc, RoboflowAPINotNotFoundError):
         return (
-            f"Roboflow could not find the model '{config.MODEL_ID}'. Check MODEL_ID in the .env file. "
+            f"Roboflow could not find the model '{config.MODEL_ID}'. Check MODEL_ID (in .env or the app's Secrets). "
             "It should look like project-name/version, for example planogram_sku110k/1."
         )
     # requests' ConnectionError and Timeout are not subclasses of the built-in ConnectionError.
