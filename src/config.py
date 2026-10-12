@@ -40,8 +40,9 @@ CONFIDENCE = _read_confidence()
 # Only boxes of this class are drawn and counted.
 PRODUCT_CLASS = (_settings.get("PRODUCT_CLASS") or "0").strip().lower()
 
-IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
-VIDEO_EXTENSIONS = {".mp4"}
+# .heic/.heif are iPhone photos; .mov is the iPhone video format (H.264 or HEVC). Results are always .jpg or .mp4.
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".heic", ".heif"}
+VIDEO_EXTENSIONS = {".mp4", ".mov"}
 
 MAX_IMAGE_MB = 10
 # A small file can still decode to a huge image (a "decompression bomb"): a 17 KB PNG can need 430 MB.

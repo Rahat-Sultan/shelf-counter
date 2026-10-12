@@ -5,6 +5,7 @@ import cv2
 from PIL import Image
 
 from src import config
+from src.image_io import can_read_header
 
 
 @dataclass
@@ -14,8 +15,11 @@ class ValidationResult:
     message: str = ""
 
 
-UNREADABLE_IMAGE = "This file could not be read as an image. It may be damaged, or not really a .jpg or .png file."
-UNREADABLE_VIDEO = "This video could not be read. It may be damaged or incomplete. Try another .mp4 file."
+UNREADABLE_IMAGE = (
+    "This file could not be read as an image. It may be damaged, or not really a .jpg, .png or .heic file."
+)
+UNREADABLE_VIDEO = "This video could not be read. It may be damaged or incomplete. Try another .mp4 or .mov file."
+UNSUPPORTED = "Unsupported file type. Please upload a photo (.jpg, .png, .heic) or a video (.mp4, .mov)."
 
 
 def image_megapixels(path: Path) -> float | None:
@@ -61,8 +65,7 @@ def validate(path: str | Path) -> ValidationResult:
             return ValidationResult(
                 False, message=f"Image is {size_mb:.1f} MB. The limit is {config.MAX_IMAGE_MB} MB."
             )
-        # Checks the file signature only, so a renamed text file is rejected without decoding.
-        if not cv2.haveImageReader(str(path)):
+        if not can_read_header(path):
             return ValidationResult(False, message=UNREADABLE_IMAGE)
         megapixels = image_megapixels(path)
         if megapixels is None:
@@ -90,4 +93,4 @@ def validate(path: str | Path) -> ValidationResult:
             )
         return ValidationResult(True, kind="video")
 
-    return ValidationResult(False, message="Unsupported file type. Please upload a .jpg, .png or .mp4 file.")
+    return ValidationResult(False, message=UNSUPPORTED)

@@ -36,7 +36,8 @@ streamlit run app.py
 ```
 
 The page opens at http://localhost:8501. Upload a photo to see it boxed and counted, with the processing time
-and a download button. The sidebar slider changes the confidence threshold (default 0.3). The first upload also
+and a download button. **Take a photo** uses the camera instead of a file, and **Detection settings** holds the
+confidence threshold (default 0.3). The first upload also
 loads the model; later uploads reuse it.
 
 The title appears within a few seconds; the model then loads for 10 to 30 seconds (longest after a reboot) while
@@ -77,7 +78,8 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 
 ## How it works
 
-1. The page accepts a .jpg, .png or .mp4 file and validates type, size and video length.
+1. The page accepts a photo (.jpg, .png, .heic), a video (.mp4, .mov) or a camera photo, and validates type,
+   size, image megapixels and video length.
 2. The detector runs the Roboflow model through Roboflow Inference.
 3. Supervision draws boxes and the product count.
 4. For video, frames wider than 1280 px are scaled down first (the model works at about 640 px anyway).

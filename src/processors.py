@@ -19,6 +19,7 @@ import supervision as sv
 from src import config
 from src.annotator import Annotator
 from src.errors import UserFacingError
+from src.image_io import read_image
 from src.validator import UNREADABLE_IMAGE, UNREADABLE_VIDEO
 
 if TYPE_CHECKING:
@@ -60,7 +61,7 @@ class Processor(ABC):
 class ImageProcessor(Processor):
     def process(self, path: Path) -> Result:
         start = time.perf_counter()
-        frame = cv2.imread(str(path))
+        frame = read_image(path)
         if frame is None:
             raise UserFacingError(UNREADABLE_IMAGE)
         detections = self.detector.detect(frame, self.confidence)

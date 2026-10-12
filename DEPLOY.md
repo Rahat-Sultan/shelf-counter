@@ -115,8 +115,8 @@ model...". The first load takes 10 to 30 seconds while the model downloads (abou
    the frame.
 3. You should get the boxed, counted photo back.
 
-iPhone videos are saved as `.mov`, which the app does not accept yet (planned for Phase 7). On iPhone, test with
-a photo, or a video saved as `.mp4`.
+iPhone photos (`.heic`) and videos (`.mov`, including HEVC) are accepted. You can also select **Take a photo** at
+the top of the page to use the camera directly (the link is HTTPS, which browsers require for camera access).
 
 ## Step 9. Share it
 

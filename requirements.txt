@@ -8,6 +8,8 @@ supervision==0.30.9
 streamlit==1.65.0
 pandas==2.3.3
 pillow==12.3.0
+# Reads iPhone .heic photos, which OpenCV cannot open.
+pillow-heif==1.8.1
 # Same version as the opencv-python that inference installs, so only one cv2 build is present.
 opencv-python-headless==4.12.0.88
 python-dotenv==1.2.4

@@ -99,12 +99,14 @@ on this laptop only, run `streamlit run app.py --server.address localhost`.
 
 ## 8. Try it
 
-1. Upload a shelf photo (`.jpg` or `.png`, up to 10 MB). The first upload downloads the model (about 7.5 MB),
-   so it takes a few seconds. After that, photos take well under a second.
+1. Upload a shelf photo (`.jpg`, `.png` or an iPhone `.heic`, up to 10 MB). The first upload downloads the model
+   (about 7.5 MB), so it takes a few seconds. After that, photos take well under a second.
 2. Check the boxes and the **Products found** count, then use **Download result**.
-3. Upload a short shelf video (`.mp4`, up to 30 seconds and 100 MB). A progress bar shows while it runs.
-   You get the annotated video, a per-frame chart and a CSV of counts.
-4. Move the **Confidence threshold** slider in the sidebar to see how the count changes.
+3. Upload a short shelf video (`.mp4` or an iPhone `.mov`, up to 30 seconds and 100 MB). A progress bar shows
+   while it runs. You get the annotated video, a per-frame chart and a CSV of counts.
+4. Select **Take a photo** at the top to use the laptop's webcam instead of a file. Allow camera access when the
+   browser asks.
+5. Open **Detection settings** and move the **Confidence threshold** slider to see how the count changes.
 
 To stop the app, press `Ctrl+C` in the terminal.
 
