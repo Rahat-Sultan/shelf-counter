@@ -32,13 +32,13 @@ flowchart LR
 
 **Tasks**
 
-- [ ] Create a free Roboflow account and copy the API key.
-- [ ] Install Python 3.10 or newer.
-- [ ] Create a virtual environment and install `inference`, `supervision`, `streamlit`, `opencv-python-headless`, `python-dotenv`.
-- [ ] Copy `.env.example` to `.env` and add the API key.
-- [ ] Confirm `.env` is in `.gitignore` before the first commit.
-- [ ] Make the first Git commit.
-- [ ] Run `pip freeze` and pin versions in `requirements.txt`.
+- [x] Create a free Roboflow account and copy the API key.
+- [x] Install Python 3.10 or newer.
+- [x] Create a virtual environment and install `inference`, `supervision`, `streamlit`, `opencv-python-headless`, `python-dotenv`.
+- [x] Copy `.env.example` to `.env` and add the API key.
+- [x] Confirm `.env` is in `.gitignore` before the first commit.
+- [x] Make the first Git commit.
+- [x] Run `pip freeze` and pin versions in `requirements.txt`. _(direct dependencies pinned, plus CPU-only PyTorch)_
 
 **Exit criteria:** `python -c "import inference, supervision, streamlit"` runs without errors, and `.env` is not tracked by Git.
 
@@ -52,15 +52,15 @@ flowchart LR
 
 **Tasks**
 
-- [ ] Take 10 shelf photos with no people in frame. Vary lighting, angle and shelf density.
-- [ ] Record a few short shelf videos (under 30 seconds).
-- [ ] Search Roboflow Universe for "retail shelf", "SKU-110K" and "shelf products".
-- [ ] Keep only projects that have a trained model attached (a model tab where you can test an image). Many projects are datasets only.
-- [ ] Shortlist 2 or 3 candidates.
-- [ ] Test each candidate in the browser, then run it on all 10 photos.
-- [ ] For each photo, count the real products by eye and record what each model found.
-- [ ] Pick the winner and write down its model ID (`project-name/version`) and why it won.
-- [ ] Fallback only if all candidates are poor: use an open-vocabulary model such as YOLO-World.
+- [ ] Take 10 shelf photos with no people in frame. Vary lighting, angle and shelf density. _(10 web images used so far; still need 10 of your own photos)_
+- [ ] Record a few short shelf videos (under 30 seconds). _(one 4.3 s clip so far)_
+- [x] Search Roboflow Universe for "retail shelf", "SKU-110K" and "shelf products".
+- [x] Keep only projects that have a trained model attached (a model tab where you can test an image). Many projects are datasets only.
+- [x] Shortlist 2 or 3 candidates.
+- [x] Test each candidate in the browser, then run it on all 10 photos. _(run on all 10 photos with scripts/evaluate.py)_
+- [ ] For each photo, count the real products by eye and record what each model found. _(true_counts.csv is still empty)_
+- [x] Pick the winner and write down its model ID (`project-name/version`) and why it won. _(planogram_sku110k/1; the reason is based on boxes found until true counts are added)_
+- [ ] Fallback only if all candidates are poor: use an open-vocabulary model such as YOLO-World. _(not needed: the SKU-110K model works)_
 
 **Deliverable:** a completed comparison table (template in `TESTING_AND_MODEL_SELECTION.md`) and a chosen model ID in `.env`.
 
@@ -76,13 +76,13 @@ flowchart LR
 
 **Tasks**
 
-- [ ] Load an image with OpenCV.
-- [ ] Run the model through Roboflow Inference.
-- [ ] Convert the result to a Supervision `Detections` object.
-- [ ] Draw boxes and the count.
-- [ ] Save the annotated image and print the count.
-- [ ] Time the inference call.
-- [ ] Try a few confidence values and note which works best.
+- [x] Load an image with OpenCV.
+- [x] Run the model through Roboflow Inference.
+- [x] Convert the result to a Supervision `Detections` object.
+- [x] Draw boxes and the count.
+- [x] Save the annotated image and print the count.
+- [x] Time the inference call.
+- [x] Try a few confidence values and note which works best.
 
 **Starter code:** `src/detector.py`, `src/annotator.py`, `src/processors.py` (`ImageProcessor`).
 
@@ -98,11 +98,11 @@ flowchart LR
 
 **Tasks**
 
-- [ ] Build the Streamlit page in `app.py`: upload, annotated image, count, download button.
-- [ ] Load the model once and cache it (`st.cache_resource`), not on every upload.
-- [ ] Show a spinner while processing.
-- [ ] Show processing time.
-- [ ] Optional: confidence slider.
+- [x] Build the Streamlit page in `app.py`: upload, annotated image, count, download button.
+- [x] Load the model once and cache it (`st.cache_resource`), not on every upload.
+- [x] Show a spinner while processing.
+- [x] Show processing time.
+- [x] Optional: confidence slider.
 
 **Exit criteria:** upload a photo, see boxes and a count, and download the result, all in under 5 seconds after the first (warm-up) run.
 
@@ -116,13 +116,13 @@ flowchart LR
 
 **Tasks**
 
-- [ ] Read frames with Supervision.
-- [ ] Run detection on every 5th frame and reuse the latest detections in between.
-- [ ] Draw boxes and the running count on every frame.
-- [ ] Write the annotated frames to a new `.mp4`.
-- [ ] Show the video in the page with a download button.
-- [ ] Show per-frame counts (for example a line chart).
-- [ ] Test playback in the browser.
+- [x] Read frames with Supervision.
+- [x] Run detection on every 5th frame and reuse the latest detections in between.
+- [x] Draw boxes and the running count on every frame.
+- [x] Write the annotated frames to a new `.mp4`.
+- [x] Show the video in the page with a download button.
+- [x] Show per-frame counts (for example a line chart).
+- [ ] Test playback in the browser. _(output is browser-standard H.264; still to be watched in a real browser)_
 
 **Starter code:** `src/processors.py` (`VideoProcessor`).
 
@@ -138,13 +138,13 @@ flowchart LR
 
 **Tasks**
 
-- [ ] Accept only `.jpg`, `.jpeg`, `.png` and `.mp4`.
-- [ ] Enforce size limits and the 30-second video limit.
-- [ ] Handle unreadable or corrupt files.
-- [ ] Handle missing API key or model ID with a clear message.
-- [ ] Handle model or network failures with a clear message.
-- [ ] Test deliberately: upload a `.pdf`, a huge file, a 60-second video, and a renamed text file.
-- [ ] Re-time the image path against the 5-second target.
+- [x] Accept only `.jpg`, `.jpeg`, `.png` and `.mp4`.
+- [x] Enforce size limits and the 30-second video limit.
+- [x] Handle unreadable or corrupt files.
+- [x] Handle missing API key or model ID with a clear message.
+- [x] Handle model or network failures with a clear message.
+- [x] Test deliberately: upload a `.pdf`, a huge file, a 60-second video, and a renamed text file. _(a 31 s video was used for the length limit)_
+- [x] Re-time the image path against the 5-second target.
 
 **Starter code:** `src/validator.py`, `tests/test_validator.py`.
 
@@ -158,7 +158,7 @@ flowchart LR
 
 **Tasks**
 
-- [ ] Finish the README: setup, how to run, model ID and why, known limits.
+- [ ] Finish the README: setup, how to run, model ID and why, known limits. _(done except the missed-products numbers and the model license)_
 - [ ] Pick 5 example inputs, including good results and honest limits. Save each input and its annotated output in `samples/`.
 - [ ] Ask a teammate to follow the README cold and time them. Fix anything that slows them down.
 - [ ] Rehearse the demo: one photo, one video, results on screen.

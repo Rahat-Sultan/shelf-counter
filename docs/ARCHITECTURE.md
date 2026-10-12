@@ -32,8 +32,14 @@ flowchart TD
     D <--> RF[Roboflow shelf model]
     IP --> A[Annotator]
     VP --> A
+    VP --> FF[ffmpeg: re-encode to H.264]
     A --> R[Result: file + count]
+    FF --> R
     R --> UI
+    IP -.->|failure| ER[Errors: plain-English message]
+    VP -.->|failure| ER
+    D -.->|key, model or network failure| ER
+    ER --> UI
 ```
 
 ## 4. Sequence of one upload
@@ -82,6 +88,8 @@ classDiagram
     }
     class Processor {
         <<abstract>>
+        +float confidence
+        +Path output_dir
         +process(path) Result
     }
     class ImageProcessor {
@@ -89,12 +97,18 @@ classDiagram
     }
     class VideoProcessor {
         +int frame_step
+        +int max_width
+        +on_progress(fraction)
         +process(path) Result
     }
     class ShelfDetector {
         -str model_id
         -float confidence
-        +detect(frame) Detections
+        -str product_class
+        +detect(frame, confidence) Detections
+    }
+    class UserFacingError {
+        +str message
     }
     class Annotator {
         +annotate(frame, detections) frame
@@ -104,6 +118,8 @@ classDiagram
         +int count
         +list per_frame_counts
         +float seconds
+        +float fps
+        +str note
     }
     Processor <|-- ImageProcessor
     Processor <|-- VideoProcessor
@@ -112,6 +128,7 @@ classDiagram
     Processor --> ShelfDetector : uses
     Processor --> Annotator : uses
     Processor ..> Result : returns
+    Processor ..> UserFacingError : raises for unreadable files
 ```
 
 ## 6. Do we need a database?
@@ -179,6 +196,7 @@ shelf-counter/
   .env.example
   .gitignore
   README.md
+  STARTUP.md
   docs/
     PRD.md
     PHASES.md
@@ -191,6 +209,10 @@ shelf-counter/
     detector.py
     annotator.py
     processors.py
+  scripts/
+    count_image.py
+    evaluate.py
+    probe_models.py
   tests/
     test_validator.py
     test_video.py

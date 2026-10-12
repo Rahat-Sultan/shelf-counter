@@ -48,7 +48,7 @@ True count is what you counted by eye. Missed = true count minus correct boxes. 
 | Total | | | | | | | | | | | |
 | Avg seconds per image | | | | | | | | | | | |
 
-Decision: Model ____ (ID: `project-name/version`) because ____.
+Decision: Model B (ID: `planogram_sku110k/1`), see the first run below. Fill in this table once `test_images/true_counts.csv` has the true counts, then confirm the decision on missed products.
 
 ### First run (2026-10-09), before true counts
 
@@ -161,7 +161,7 @@ Name pairs consistently, for example `01_clean_shelf.jpg` and `01_clean_shelf_an
 ## 7. Pre-demo checklist
 
 - [ ] App starts from a clean clone following only the README.
-- [ ] `.env` is not in Git.
+- [x] `.env` is not in Git.
 - [ ] Model is cached so the first demo upload is not slow (run one upload beforehand).
 - [ ] Demo photo and video are ready and contain no people.
 - [ ] All acceptance criteria in `PRD.md` are ticked.

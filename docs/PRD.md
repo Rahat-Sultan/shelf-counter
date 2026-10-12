@@ -81,14 +81,14 @@ The starter code uses Streamlit. Gradio would also satisfy the brief.
 
 ## 7. Acceptance criteria ("done when")
 
-- [ ] Uploading any shelf photo returns an annotated image in under 5 seconds.
-- [ ] Uploading a 10-second video returns an annotated video with a count per frame.
-- [ ] The app shows a clear error for unsupported files and for files that are too large.
-- [ ] A teammate can run the app from the README in under 10 minutes.
+- [x] Uploading any shelf photo returns an annotated image in under 5 seconds.
+- [x] Uploading a 10-second video returns an annotated video with a count per frame.
+- [x] The app shows a clear error for unsupported files and for files that are too large.
+- [ ] A teammate can run the app from the README in under 10 minutes. _(not tested yet)_
 
 ## 8. Deliverables
 
-- [ ] Code in a Git repo with a README covering setup, how to run, and which model ID was chosen and why.
+- [ ] Code in a Git repo with a README covering setup, how to run, and which model ID was chosen and why. _(repo on GitHub; 5 commits not pushed yet; model reason needs true counts)_
 - [ ] 5 example inputs and their annotated outputs (in `samples/`).
 - [ ] A short demo to the team: upload a photo, upload a video, show the results.
 

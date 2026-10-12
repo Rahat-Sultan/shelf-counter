@@ -63,6 +63,12 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
   on a snack stand where this model finds 35). A third candidate, `shelf-product/1`, recognises
   specific coffee brands rather than generic products, so it was ruled out.
 - Speed: 0.11 s per photo on average, 0.13 s slowest (Intel i5-8350U laptop CPU, no GPU).
+- Labels: boxes are drawn without label text. The model's only class is named `0`, so every label would read
+  "0", and on dense shelves labels hide the products. The "Products: N" overlay carries the count instead.
+- Fallback: the brief suggests an open-vocabulary model such as YOLO-World if no shelf model works well.
+  It was not needed, because the SKU-110K model works, so it is not installed.
+- License: not yet confirmed. Check the "Cite This Project" section on the model's Universe page and add the
+  license and credit here before publishing results.
 
 ## How it works
 
@@ -90,6 +96,7 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 ## Project layout
 
 ```
+STARTUP.md          step-by-step setup guide
 app.py              Streamlit page
 src/config.py       settings and limits
 src/validator.py    file type, size, duration and readability checks

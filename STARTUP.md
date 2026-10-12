@@ -18,7 +18,7 @@ default `python3` is newer, install 3.12 alongside it and use `python3.12` in st
 ## 2. Get the code
 
 ```bash
-git clone <repo-url> shelf-counter
+git clone https://github.com/Rahat-Sultan/shelf-counter.git
 cd shelf-counter
 ```
 
