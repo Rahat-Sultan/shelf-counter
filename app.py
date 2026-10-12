@@ -7,12 +7,9 @@ import streamlit as st
 
 # On Streamlit Community Cloud the settings are pasted into the Secrets box. Streamlit copies top-level secrets
 # into environment variables only when secrets are first loaded, so load them now, before src.config reads the
-# environment. Without a secrets file this does nothing.
-try:
-    st.secrets.load_if_toml_exists()
-    SECRETS_ERROR = ""
-except Exception as exc:  # a secrets file exists but is not valid TOML
-    SECRETS_ERROR = f"The app's secrets could not be read: {exc}. Check the Secrets box for a typo."
+# environment. Without a secrets file this does nothing. Streamlit treats a secrets file with a typo (invalid TOML)
+# as missing, so that case shows up below as "not set".
+st.secrets.load_if_toml_exists()
 
 from src import config  # noqa: E402  (must come after the secrets are loaded)
 from src.annotator import Annotator  # noqa: E402
@@ -26,9 +23,6 @@ st.set_page_config(page_title="Shelf Product Counter", layout="centered")
 st.title("Shelf Product Counter")
 st.caption("Upload a shelf photo (.jpg, .png) or a short video (.mp4, under 30 seconds).")
 
-if SECRETS_ERROR:
-    st.error(SECRETS_ERROR)
-
 missing = [
     name
     for name, value in [("ROBOFLOW_API_KEY", config.ROBOFLOW_API_KEY), ("MODEL_ID", config.MODEL_ID)]
@@ -38,8 +32,8 @@ if missing:
     st.error(
         f"{' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} not set. On your laptop, copy "
         ".env.example to .env and fill in your values. On Streamlit Community Cloud, add them in App settings, "
-        'Secrets, one per line, like ROBOFLOW_API_KEY = "your key". On other hosts, add them as environment '
-        "variables. "
+        'Secrets, one per line, like ROBOFLOW_API_KEY = "your key" (a typo there, such as a missing quote, makes '
+        "all secrets unreadable). On other hosts, add them as environment variables. "
         "Then restart the app. See STARTUP.md or DEPLOY.md."
     )
     st.stop()

@@ -11,3 +11,6 @@ __pycache__/
 .mcp.json
 # Local Streamlit secrets (the same values as .env). Never commit.
 .streamlit/secrets.toml
+# Local AI-assistant settings (Claude Code, other agents); not part of the app.
+.agents/
+.claude/
