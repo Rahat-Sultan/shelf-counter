@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import ctypes
+import gc
 import logging
 import shutil
+import sys
 import subprocess
 import time
 from abc import ABC, abstractmethod
@@ -105,6 +108,21 @@ def encode_for_browser(src: Path, dst: Path) -> None:
     src.unlink()
 
 
+def release_memory() -> None:
+    """Hands memory freed after a video back to the operating system.
+
+    Decoding video frames leaves large freed blocks that the C allocator keeps for reuse, so the process
+    stayed about 250 MB bigger after each video. That matters on hosts with a small memory limit.
+    malloc_trim exists only in glibc (Linux), so this does nothing on macOS or Windows.
+    """
+    gc.collect()
+    if sys.platform.startswith("linux"):
+        try:
+            ctypes.CDLL("libc.so.6").malloc_trim(0)
+        except (OSError, AttributeError):
+            pass
+
+
 class VideoProcessor(Processor):
     def __init__(
         self,
@@ -140,6 +158,7 @@ class VideoProcessor(Processor):
                 if self.on_progress and info.total_frames:
                     self.on_progress(min(1.0, (i + 1) / info.total_frames))
 
+        release_memory()
         if not counts:
             raise UserFacingError(UNREADABLE_VIDEO)
         encode_for_browser(raw_path, out_path)

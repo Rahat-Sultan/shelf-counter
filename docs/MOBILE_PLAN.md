@@ -1,6 +1,19 @@
 # Mobile and Web: Plan for Two Apps
 
-Status: Proposal, needs approval · Branch: `develop` · Date: 2026-10-12
+Status: **Decided 2026-10-12: option A** (one web app that works on phones, deploy once it works). Options B
+and C below are kept for reference and are not planned. · Branch: `develop`
+
+## Chosen plan: option A
+
+| Phase | Goal | Main tasks | Exit criteria |
+| --- | --- | --- | --- |
+| 7. Phone-friendly web app | The Streamlit app works well on a phone browser | Test the upload box's "Take photo" and "Record video" on Android and iPhone over the same Wi-Fi; accept iPhone `.heic` photos and `.mov` videos; add "Take a photo" with `st.camera_input` for laptops; check the layout at phone width; reminder to keep people out of the frame | From a phone on the same Wi-Fi, a photo and a 10-second video come back counted |
+| 8. Deploy on Streamlit Community Cloud | A free HTTPS link | Deploy from the private GitHub repo with Python 3.12, `ROBOFLOW_API_KEY`, `MODEL_ID` and `PRODUCT_CLASS` as secrets; invite viewers by email; check memory and the first-load time | Invited viewers open the link on a phone and get a counted photo |
+
+Preparation already done: `packages.txt` (ffmpeg, OpenCV system libraries), `uv.toml` (so Community Cloud's uv
+install resolves CPU-only PyTorch), no fixed server address, and memory released after each video.
+
+Date of the original proposal: 2026-10-12
 
 ## 1. Summary
 

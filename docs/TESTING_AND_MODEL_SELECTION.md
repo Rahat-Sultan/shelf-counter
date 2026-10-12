@@ -128,7 +128,8 @@ Extra cases added in Phase 5:
 | Secrets in Git history | None; `.env` was never committed |
 | 17 KB PNG that decodes to 144 MP | Was accepted and used 886 MB of memory. Now: "Image is 144 megapixels. The limit is 100 megapixels." |
 | 194 KB PNG that decodes to 1600 MP | Now: "Image is over 179 megapixels. ..." |
-| Server reachable from the network | Was: listened on all interfaces (LAN and public URL printed). Now: 127.0.0.1 only |
+| Server reachable from the network | Was bound to 127.0.0.1 on 2026-10-12, then reopened the same day so phones and Community Cloud can reach it (approach A). Local-only: `--server.address localhost` |
+| Memory, Linux, model loaded | 720 MB at idle, about 760 MB after a photo, 1.1 to 1.25 GB after a 4K video (was up to 1.6 GB before releasing freed memory) |
 | Model cache after reboot | Was in `/tmp/cache`, wiped on reboot. Now in `~/.cache/shelf-counter/models` |
 | Time until the page shows | Was 20 to 25 s of blank page after a reboot. Now the title shows within 4 s and the full page by 12 s |
 | Portrait phone video (rotation flag) | Correct: 360x640 in and out, not squashed |

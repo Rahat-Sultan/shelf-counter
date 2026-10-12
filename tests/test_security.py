@@ -50,10 +50,17 @@ def test_model_cache_is_not_in_tmp():
     assert not out.stdout.strip().startswith("/tmp")
 
 
-def test_server_only_listens_on_localhost():
+def test_streamlit_config_is_deployable():
+    """No fixed address, so phones and Community Cloud can reach the app; upload limit matches ours."""
     settings = tomllib.loads((ROOT / ".streamlit" / "config.toml").read_text())
-    assert settings["server"]["address"] == "localhost"
+    assert "address" not in settings["server"]
     assert settings["server"]["maxUploadSize"] == config.MAX_VIDEO_MB
+    assert settings["browser"]["gatherUsageStats"] is False
+
+
+def test_deploy_files_exist():
+    assert {"ffmpeg", "libgl1"} <= set((ROOT / "packages.txt").read_text().split())
+    assert tomllib.loads((ROOT / "uv.toml").read_text())["index-strategy"] == "unsafe-best-match"
 
 
 def test_env_and_scratch_outputs_ignored_but_samples_tracked():

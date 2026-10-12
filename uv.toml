@@ -1,0 +1,5 @@
+# Streamlit Community Cloud installs requirements.txt with uv. uv normally takes each package only from the first
+# index that has it, and the PyTorch CPU index (see requirements.txt) also hosts older copies of common packages
+# such as requests and pillow, so our pins would fail to resolve. This lets uv pick each pin from either index.
+# Both indexes are official (PyPI and download.pytorch.org). pip, used for local installs, does this by default.
+index-strategy = "unsafe-best-match"

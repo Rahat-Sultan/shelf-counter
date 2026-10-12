@@ -166,7 +166,8 @@ erDiagram
 | Validate before processing | Rejects bad files cheaply, with a clear message, before the model is loaded or called |
 | Load the model once and cache it | Loading on every upload would break the 5-second target |
 | Import `inference` only when the model loads, then warm the model as soon as the page is drawn | Importing `inference` takes 10 to 20 seconds; at the top of `app.py` it left the page blank that long. Warming right after drawing keeps the first upload fast and reports a bad key immediately |
-| Listen on localhost only | Streamlit's default listens on every interface, so anyone on the same Wi-Fi could use the app |
+| No fixed server address in `config.toml` | Phones on the same Wi-Fi and Streamlit Community Cloud must reach the app (2026-10-12, approach A). Local-only use: `--server.address localhost`. The upload checks protect it from oversized and bomb files |
+| Release freed memory after each video | Freed video buffers stayed in the process (about 250 MB per video); `malloc_trim` returns them on Linux, which matters on hosts with small memory limits |
 | Model cache in `~/.cache/shelf-counter/models` | The default `/tmp/cache` is wiped on reboot, which forced a new download and broke offline use |
 | Check image megapixels from the header before decoding | A 17 KB PNG decoded to 432 MB in testing; OpenCV accepts up to about 1 billion pixels |
 | Detect every 5th video frame and reuse results in between | Meets the "every 5th frame" speed requirement while still giving every frame boxes and a count |

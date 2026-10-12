@@ -94,8 +94,8 @@ It opens http://localhost:8501 in your browser. If it does not, open that addres
 a few seconds, then the page says "Loading the model..." for 10 to 30 seconds, longest on the first start after a
 reboot. Once that message is gone, uploads are fast.
 
-The app only accepts connections from this laptop. To let others on your network open it on purpose, run
-`streamlit run app.py --server.address 0.0.0.0`.
+To open it from a phone on the same Wi-Fi, use the "Network URL" that `streamlit run` prints. To keep the app
+on this laptop only, run `streamlit run app.py --server.address localhost`.
 
 ## 8. Try it
 

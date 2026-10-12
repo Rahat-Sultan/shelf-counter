@@ -99,8 +99,9 @@ python -m scripts.evaluate --images path/to/photos --models planogram_sku110k/1=
 
 ## Security and privacy
 
-- The app only accepts connections from this laptop (`.streamlit/config.toml` sets `server.address = "localhost"`).
-  Streamlit's default would let anyone on the same network use it.
+- When run locally, the app can be opened by other devices on the same network, so you can test it from a phone.
+  To keep it on this laptop only, run `streamlit run app.py --server.address localhost`. A fixed address is not
+  set in `.streamlit/config.toml`, because that would stop phones and Streamlit Community Cloud from reaching it.
 - Photos and videos never leave the laptop: the model runs locally. The `inference` package reports usage counts
   to Roboflow (frame counts, durations, a hashed API key), not images.
 - The API key stays in `.env`, which Git ignores. `.env` is read only by the app's own settings, not exported

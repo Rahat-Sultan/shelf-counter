@@ -1,8 +1,7 @@
 [server]
-# Only this laptop can open the app. Streamlit's default listens on every network interface,
-# so anyone on the same Wi-Fi could use it. To share it on purpose, run:
-#   streamlit run app.py --server.address 0.0.0.0
-address = "localhost"
+# No server.address here on purpose: phones on the same Wi-Fi and Streamlit Community Cloud must be able to
+# reach the app. To keep it on this laptop only, run: streamlit run app.py --server.address localhost
+#
 # Matches MAX_VIDEO_MB in src/config.py, so the browser rejects bigger files before uploading them.
 maxUploadSize = 100
 
