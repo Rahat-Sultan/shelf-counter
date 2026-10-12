@@ -10,7 +10,9 @@ For running the app on your own laptop instead, see [STARTUP.md](STARTUP.md).
 | | Free | Maker (10 USD a month) |
 | --- | --- | --- |
 | Projects | 1 | 5 |
-| Deploys | 5 a month | more (see the Billing page) |
+| Deploys | 5 a month (a new deploy, for example from another branch) | more (see the Billing page) |
+| Redeploys | 20 a month, counted separately from deploys | more |
+| AI Assist messages | 10 a month | more |
 | Online time | **About 3 days per deploy** (the dashboard showed "Goes offline in 2d 23h" right after a deploy on 2026-10-12; the homepage says 24 hours), then offline until you redeploy or upgrade | Always on, no sleeping |
 | HTTPS link | Yes | Yes |
 
@@ -76,25 +78,20 @@ Then choose the branch **`develop`**.
 
 **Check:** the branch list loaded and `develop` is selected.
 
-## Step 5. Add the environment variables
+## Step 5. Add the deploy context
 
-Environment variables belong to the **project**, not your account: the **Settings** item in the left menu is only
-for your profile. On the Projects page, look on the project card under **Details**, the **⋯** menu or the pencil
-icon. Add:
+livemy.app has **no screen for environment variables**. Its AI agent builds the app and writes the settings into a
+`.env` file on the server (`/home/appuser/app/.env`). You tell the agent what it needs in the **Deploy context**
+box of the deploy dialog. Paste this, without your API key:
 
-| Name | Value |
-| --- | --- |
-| `ROBOFLOW_API_KEY` | your Roboflow private API key (the same one as in your local `.env`) |
-| `MODEL_ID` | `planogram_sku110k/1` |
-| `PRODUCT_CLASS` | `0` |
-| `CONFIDENCE` | `0.3` |
+> Shelf Product Counter is a Streamlit web app that counts products on retail shelves. Build it with the
+> `Dockerfile` in the repository root (Python 3.12, ffmpeg and the OpenCV system libraries are needed) rather than
+> auto-detecting the stack. The container starts Streamlit on the port in `PORT` (default 8501) and needs about
+> 1.5 GB of RAM. Set `MODEL_ID=planogram_sku110k/1`, `PRODUCT_CLASS=0` and `CONFIDENCE=0.3`. I will provide
+> `ROBOFLOW_API_KEY` after the deploy. Do not commit or push anything to the Git repository.
 
-Type the values without quotes or spaces. Never put the key in a file in the repo.
-
-If the dashboard only shows environment variables after the first deploy, deploy once, add them, then redeploy.
-Without them the page shows "ROBOFLOW_API_KEY and MODEL_ID are not set", which is expected.
-
-If there is a resources option, choose at least 2 GB of memory.
+The API key is added after the deploy, in step 7. Until then the page shows "ROBOFLOW_API_KEY is not set",
+which is expected.
 
 ## Step 6. Deploy and watch the build
 
@@ -106,7 +103,23 @@ installed. Later builds are faster.
 
 **Check:** the project shows **Live** and a public URL. If it shows **Failed**, see the troubleshooting table.
 
-## Step 7. Test the live app
+## Step 7. Add the API key with AI Assist
+
+1. On the project card, select **Continue with AI Assist**.
+2. Send this message, with your Roboflow private API key in place of `<your key>`:
+
+   > Set `ROBOFLOW_API_KEY=<your key>` in `/home/appuser/app/.env`, and keep `MODEL_ID=planogram_sku110k/1`,
+   > `PRODUCT_CLASS=0` and `CONFIDENCE=0.3`. Then run `cd /home/appuser/app && docker compose up -d` so the
+   > container picks up the new value, and check the page no longer shows the "not set" error. Do not change the
+   > app's code and do not commit or push anything to the Git repository.
+
+3. Wait for the agent to reply that it is done (a minute or two).
+
+The key passes through livemy.app's AI agent; there is no other way to give it a secret on this platform. If that
+concerns you, create a fresh key in Roboflow afterwards and repeat this step. Each message uses one of your AI
+Assists (10 a month on the free plan).
+
+## Step 8. Test the live app
 
 1. Open the URL. The title appears in a few seconds, then "Loading the model..." for 10 to 30 seconds while the
    model downloads (about 7.5 MB) and loads. Wait until the message is gone.
@@ -116,7 +129,7 @@ installed. Later builds are faster.
 
 **Check:** all four behave as described.
 
-## Step 8. Test from a phone
+## Step 9. Test from a phone
 
 1. Open the same URL on your phone.
 2. Tap the upload box. Phones offer **Take photo** (and **Record video**); take a photo of a shelf, with no
@@ -126,9 +139,9 @@ installed. Later builds are faster.
 iPhone videos are saved as `.mov`, which the app does not accept yet (that is part of Phase 7). On iPhone, test
 with a photo, or a video saved as `.mp4`.
 
-## Step 9. Make it the official version
+## Step 10. Make it the official version
 
-When steps 7 and 8 work:
+When steps 8 and 9 work:
 
 ```bash
 cd ~/BxTrackSolution/shelf-product-counter-with-roboflow/shelf-counter
@@ -146,7 +159,8 @@ Then in livemy.app, change the project's branch to `master` and redeploy. From n
 1. Make and commit the change on `develop`, then `git push`.
 2. In livemy.app, select **Redeploy** for the project.
 
-On the free plan each redeploy uses one of your 5 deploys for the month, and restarts the online window.
+On the free plan redeploys are counted separately from deploys (20 a month), and a redeploy restarts the online
+window. Check whether the key survived the redeploy; if the page says "not set" again, repeat step 7.
 
 Avoid fixing problems with livemy.app's **AI Assist**: it edits the deployed copy, so its changes are not in
 your GitHub repo and are lost or overwritten on the next deploy from GitHub. Fix the code in the repo instead.
@@ -174,7 +188,7 @@ your GitHub repo and are lost or overwritten on the next deploy from GitHub. Fix
 | Uploads fail with "AxiosError" or a 403 error | The proxy in front of the app blocks Streamlit's upload protection. Add an environment variable `STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION` = `false`, redeploy, and try again |
 | Page loads but stays grey or blank for over a minute | Open the deploy logs and look for an error after "Loading the model". Then see the rows above |
 | Link stopped working after a few days | The free plan keeps a deploy online for a limited time (the card shows "Goes offline in ..."). Redeploy, or upgrade to Maker |
-| No place to add environment variables | Check the project card's **Details**, **⋯** menu and pencil icon. If none has them, ask **Continue with AI Assist** to set `ROBOFLOW_API_KEY` for the project without writing it to any file, and consider creating a fresh Roboflow key afterwards. Or ask support@livemy.app |
+| No place to add environment variables | That is expected: livemy.app keeps them in `/home/appuser/app/.env` on the server, and AI Assist edits that file (step 7) |
 
 ## Other hosts
 
