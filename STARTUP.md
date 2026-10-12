@@ -123,6 +123,7 @@ Results are saved in `outputs/`.
 | --- | --- |
 | `No matching distribution found for inference` or `torch` | Your Python is too new or too old. Recreate the venv with Python 3.12 (step 3) |
 | `Disk quota exceeded` or `No space left on device` during install | `/tmp` is too small. Run `mkdir -p ~/.cache/pip-tmp` and then `TMPDIR=~/.cache/pip-tmp pip install -r requirements.txt` |
+| `Error: Invalid value: File does not exist: app.py` | You are in the wrong folder. `cd` into `shelf-counter` (the folder with `app.py`), then run the command again |
 | `streamlit: command not found` or `ModuleNotFoundError: No module named 'inference'` | The venv is not active. Run `source .venv/bin/activate` (step 3), or use `.venv/bin/streamlit run app.py` |
 | Browser shows a blank or grey page | Check the terminal: if `streamlit run` printed an error, fix that first. Otherwise wait 30 seconds; the first start after a reboot is slow. Make sure you opened http://localhost:8501 |
 | Page says the API key or MODEL_ID is not set | Check that `.env` exists in this folder, is saved, and has your real key (step 5). Restart the app |
